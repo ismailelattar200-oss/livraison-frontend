@@ -37,22 +37,22 @@ const StatCard = ({ icon: Icon, title, value, iconColor, iconBg }) => {
     if (isEmerald) { glowClass = "group-hover:shadow-[0_0_30px_-5px_rgba(16,185,129,0.3)] group-hover:border-emerald-500/50"; blurColor = "bg-emerald-500"; }
 
     return (
-        <div className={`group relative bg-[#1e1f2e] rounded-2xl p-6 flex flex-col justify-between overflow-hidden transition-all duration-500 border border-white/5 shadow-xl shadow-black/20 ${glowClass} hover:-translate-y-1`}>
+        <div className={`group relative bg-[#1e1f2e] rounded-2xl p-5 flex flex-col justify-between overflow-hidden transition-all duration-300 border border-white/5 shadow-lg ${glowClass} hover:-translate-y-0.5 h-[140px]`}>
             {/* Subtle background glow */}
-            <div className={`absolute -top-20 -right-20 w-48 h-48 rounded-full blur-[60px] opacity-10 transition-all duration-500 group-hover:opacity-30 ${blurColor}`}></div>
+            <div className={`absolute -top-16 -right-16 w-36 h-36 rounded-full blur-[45px] opacity-10 transition-all duration-500 group-hover:opacity-25 ${blurColor}`}></div>
             
-            <div className="relative z-10 flex justify-between items-start mb-6">
-                <p className="text-gray-400 text-sm font-bold uppercase tracking-widest font-sans mt-2">{title}</p>
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${iconBg} ${iconColor} shadow-inner border border-white/5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}>
-                    <Icon className="w-7 h-7" />
+            <div className="relative flex justify-between items-center">
+                <p className="text-gray-400 text-xs font-bold uppercase tracking-wider font-sans">{title}</p>
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${iconBg} ${iconColor} shadow-inner border border-white/5 transition-transform duration-300 group-hover:scale-110`}>
+                    <Icon className="w-5 h-5" />
                 </div>
             </div>
-            <div className="relative z-10">
-                <h3 className="font-bold text-6xl text-white tracking-tighter font-display drop-shadow-md">{value}</h3>
+            <div className="relative">
+                <h3 className="font-bold text-4xl text-white tracking-tight font-display drop-shadow-sm">{value}</h3>
             </div>
             
             {/* Glossy overlay effect */}
-            <div className="absolute inset-0 rounded-2xl border border-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none mix-blend-overlay"></div>
+            <div className="absolute inset-0 rounded-2xl border border-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none mix-blend-overlay"></div>
         </div>
     );
 };

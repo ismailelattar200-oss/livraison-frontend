@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LayoutGrid, Package, Settings, LogOut, ChevronDown } from 'lucide-react';
+import CuisineAiChatWidget from '../components/staff/CuisineAiChatWidget';
 
 const CuisineLayout = () => {
     const { user, logout } = useAuth();
@@ -127,8 +128,9 @@ const CuisineLayout = () => {
                 </header>
 
                 {/* Page Content */}
-                <div className="flex-1 p-8 pt-2 overflow-y-auto">
+                <div className="flex-1 p-8 pt-2 overflow-y-auto relative">
                     <Outlet />
+                    <CuisineAiChatWidget />
                 </div>
             </main>
         </div>

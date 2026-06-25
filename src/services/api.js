@@ -66,5 +66,21 @@ api.deleteAccount = () => apiInstance.delete('/user');
 
 // ── Admin ─────────────────────────────────────────────────────
 api.getAdminStats = () => apiInstance.get('/admin/stats');
+api.getDriverAlerts = () => apiInstance.get('/admin/driver-alerts');
+api.getPerformanceAnalytics = () => apiInstance.get('/admin/performance-analytics');
+api.getAiRecommendations = () => apiInstance.get('/admin/ai-recommendations');
+api.getPromotions = () => apiInstance.get('/admin/promotions');
+api.createPromotion = (data) => apiInstance.post('/admin/promotions', data);
+api.getPromotionsSuggestions = () => apiInstance.get('/admin/promotions/ai-suggestions');
+api.getLiveTracking = () => apiInstance.get('/admin/live-tracking');
+api.getFeedbacks = () => apiInstance.get('/admin/feedbacks');
+api.getFeedbacksAiSummary = () => apiInstance.get('/admin/feedbacks/ai-summary');
+api.getRevenueAnalytics = () => apiInstance.get('/admin/revenue-analytics');
+
+// ── Delivery AI Agent ──────────────────────────────────────────
+api.getDeliveryUnifiedDashboard = () => apiInstance.get('/delivery/unified-dashboard');
+api.acceptDeliveryOrder = (id) => apiInstance.post(`/delivery/orders/${id}/accept`);
+api.rejectDeliveryOrder = (id) => apiInstance.post(`/delivery/orders/${id}/reject`);
+api.updateDeliveryStatus = (id, status) => apiInstance.put(`/delivery/orders/${id}/status`, { status });
 
 export default api;

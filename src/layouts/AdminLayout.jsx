@@ -6,6 +6,7 @@ import {
     Tags, Image as ImageIcon, Calendar, Briefcase, MessageSquare, 
     Users, Settings, Search, Bell, ChevronDown, LogOut, User, Package, X
 } from 'lucide-react';
+import AdminAiChatWidget from '../components/admin/AdminAiChatWidget';
 
 const AdminLayout = () => {
     const { user, logout } = useAuth();
@@ -110,7 +111,7 @@ const AdminLayout = () => {
             {/* Main Content */}
             <main className="flex-1 ml-[260px] flex flex-col min-h-screen min-w-0 bg-[#12131f]">
                 {/* Top Bar */}
-                <header className="h-[80px] flex items-center justify-between px-8 sticky top-0 z-10 bg-[#12131f]/95 backdrop-blur-md border-b border-white/[0.04]">
+                <header className="h-[80px] flex items-center justify-between px-8 sticky top-0 z-40 bg-[#12131f]/95 backdrop-blur-md border-b border-white/[0.04]">
                     {/* Page Title */}
                     <div>
                         <h1 className="text-xl font-bold text-white">Dashboard</h1>
@@ -240,8 +241,9 @@ const AdminLayout = () => {
                 </header>
 
                 {/* Page Content */}
-                <div className="flex-1 p-8 min-w-0">
+                <div className="flex-1 p-8 min-w-0 relative">
                     <Outlet />
+                    <AdminAiChatWidget />
                 </div>
             </main>
 

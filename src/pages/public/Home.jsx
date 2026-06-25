@@ -17,26 +17,29 @@ const Home = () => {
 
     const heroSlides = [
         {
-            bgGradient: "bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#1C1F3A] via-[#0D0D0D] to-[#080911]",
-            badge: "LIVRAISON GRATUITE",
-            title: "Livraison\nPremium",
-            description: "Vos plats gastronomiques préférés, livrés gratuitement dès 500 MAD.",
+            bgGradient: "bg-[#0A0A0A]",
+            image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=2000&q=100", // Dark, beautiful gourmet meat/steak/food
+            badge: "GASTRONOMIE MÉDITERRANÉENNE",
+            title: "Art Culinaire",
+            description: "Une cuisson parfaite aux fines herbes fraîches et citron braisé.",
             buttonText: "Commander",
             buttonLink: "/menu"
         },
         {
-            bgGradient: "bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-[#0D0D0D] via-[#111322] to-[#1C1F3A]",
-            badge: "COMMANDE EN LIGNE",
-            title: "Saveurs\nAuthentiques",
-            description: "Découvrez nos plats signatures et créations du chef, prêts à déguster.",
+            bgGradient: "bg-[#0A0A0A]",
+            image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=2000&q=100", // Extremely appetizing, bright but moody gourmet food
+            badge: "PLATEAU ROYAL",
+            title: "Saveurs d'Exception",
+            description: "Sélection premium de nos chefs dans une harmonie de saveurs.",
             buttonText: "Voir le Menu",
             buttonLink: "/menu"
         },
         {
-            bgGradient: "bg-gradient-to-tr from-[#1C1F3A] via-[#0A0A12] to-[#0D0D0D]",
-            badge: "EXPÉRIENCE INOUBLIABLE",
-            title: "Cuisine\nd'Exception",
-            description: "L'art de la table à son apogée, préparé avec passion et raffinement.",
+            bgGradient: "bg-[#0A0A0A]",
+            image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=2000&q=100", // Bright, colorful gourmet sushi/seafood on dark background
+            badge: "EXPÉRIENCE VIP",
+            title: "Créations Uniques",
+            description: "Une explosion de saveurs dans une présentation spectaculaire.",
             buttonText: "Réserver",
             buttonLink: "/menu"
         }
@@ -106,78 +109,88 @@ const Home = () => {
                 </div>
             )}
 
-            {/* Hero Section */}
-            <section className="relative min-h-screen pt-32 pb-20 flex items-center justify-center bg-cream overflow-hidden">
-                <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 h-[70vh] min-h-[550px] max-h-[800px]">
-                    <div className="w-full h-full rounded-2xl shadow-2xl relative overflow-hidden group border border-white/10 bg-[#0D0D0D]">
-                        
-                        {/* Slides loop */}
-                        {heroSlides.map((slide, index) => (
-                            <div 
-                                key={index}
-                                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${slide.bgGradient} ${currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
-                            >
-                                {/* Subtle vignette/glow effect overlay */}
-                                <div className="absolute inset-0 bg-black/30 mix-blend-multiply"></div>
+            {/* Premium Hero Section Redesign - Floating Card Layout */}
+            <section className="relative w-full pt-28 pb-16 flex items-center justify-center bg-cream">
+                {/* Main Banner Container - Soft Luxury Gastronomy Card */}
+                <div className="w-full max-w-[1500px] h-[60vh] min-h-[500px] max-h-[700px] mx-4 md:mx-8 lg:mx-12 rounded-[2rem] relative overflow-hidden group bg-[#1A1A1A] shadow-[0_20px_60px_rgba(30,22,17,0.5)] border border-[#D4AF37]/30 backdrop-blur-md">
+                    
+                    {/* Slides loop */}
+                    {heroSlides.map((slide, index) => (
+                        <div 
+                            key={index}
+                            className={`absolute inset-0 bg-cover bg-center md:bg-right transition-opacity duration-1000 ease-in-out ${currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                            style={{ backgroundImage: `url('${slide.image}')` }}
+                        >
+                                {/* Smooth Image Blending Overlay - Soft warm luxury gradient */}
+                                <div className="absolute inset-y-0 left-0 w-full md:w-[75%] lg:w-[65%] bg-gradient-to-r from-[#1E1611] via-[#1A1A1A]/90 to-transparent"></div>
+                                {/* Ambient Warm Glow */}
+                                <div className="absolute inset-0 bg-gradient-to-tr from-[#2D2219]/40 via-transparent to-transparent pointer-events-none"></div>
                                 
                                 {/* Content container */}
-                                <div className="relative z-20 h-full flex flex-col justify-center items-start px-10 md:px-20 lg:px-28 max-w-4xl">
-                                    <div className="mb-6">
-                                        <span className="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] border border-gold/50 text-gold bg-transparent shadow-sm">
+                                <div className="relative z-20 h-full flex flex-col justify-center items-start px-12 sm:px-16 md:px-24 lg:px-32 max-w-[800px]">
+                                    
+                                    {/* Badge */}
+                                    <div className="mb-6 overflow-hidden">
+                                        <span className="inline-flex items-center px-6 py-2 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-[0.35em] border border-[#D4AF37]/40 text-[#D4AF37] bg-[#1E1611]/60 backdrop-blur-md shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mr-3 animate-pulse"></span>
                                             {slide.badge}
                                         </span>
                                     </div>
-                                    <h1 className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl text-white mb-6 leading-[1.1] font-display">
-                                        {slide.title.split('\n').map((line, i) => (
-                                            <span key={i} className="block">
-                                                {line}
-                                            </span>
-                                        ))}
+                                    
+                                    {/* Main Title - Pure white with soft warm shadow */}
+                                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[75px] font-display font-normal text-white mb-6 leading-[1.05] drop-shadow-[0_4px_15px_rgba(45,34,25,0.6)] tracking-tight">
+                                        {slide.title}
                                     </h1>
-                                    <p className="text-lg md:text-xl text-gray-300 font-sans font-light mb-10 max-w-2xl leading-relaxed">
+                                    
+                                    {/* Subtitle/Description - Soft beige/cream */}
+                                    <p className="text-base sm:text-lg text-[#EAE3D2] font-sans font-light mb-12 max-w-[500px] leading-relaxed drop-shadow-sm">
                                         {slide.description}
                                     </p>
+                                    
+                                    {/* CTA Button - Warm golden gradient with glow */}
                                     <div>
                                         <Link 
                                             to={slide.buttonLink} 
-                                            className="inline-flex items-center gap-3 bg-gold text-navy-deep font-bold text-sm md:text-base px-8 py-4 rounded-full transition-all duration-300 hover:bg-white hover:scale-105 shadow-[0_4px_20px_rgba(201,168,76,0.3)]"
+                                            className="group relative inline-flex items-center justify-center px-10 py-4 font-sans font-semibold text-[13px] sm:text-sm uppercase tracking-widest text-[#1E1611] bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] rounded-full overflow-hidden transition-all hover:scale-105 shadow-[0_10px_20px_rgba(212,175,55,0.3)] hover:shadow-[0_15px_30px_rgba(212,175,55,0.6)]"
                                         >
-                                            {slide.buttonText} <ChevronRight className="w-5 h-5" />
+                                            <span className="absolute inset-0 w-full h-full bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></span>
+                                            <span className="relative flex items-center gap-3">
+                                                {slide.buttonText} 
+                                            </span>
                                         </Link>
                                     </div>
                                 </div>
                             </div>
                         ))}
 
-                        {/* Navigation Arrows */}
+                        {/* Navigation Arrows - Left/Right edges */}
                         <button 
                             onClick={prevSlide}
-                            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center cursor-pointer hover:bg-black/60 transition-all z-20 opacity-0 group-hover:opacity-100 hidden md:flex hover:scale-105"
+                            className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/10 bg-black/40 backdrop-blur-xl flex items-center justify-center text-white/70 hover:text-white hover:border-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all duration-300 cursor-pointer z-30 opacity-0 group-hover:opacity-100 hidden md:flex"
                             aria-label="Slide précédente"
                         >
-                            <ChevronLeft className="w-8 h-8 text-white" />
+                            <ChevronLeft className="w-6 h-6" />
                         </button>
                         <button 
                             onClick={nextSlide}
-                            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center cursor-pointer hover:bg-black/60 transition-all z-20 opacity-0 group-hover:opacity-100 hidden md:flex hover:scale-105"
+                            className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/10 bg-black/40 backdrop-blur-xl flex items-center justify-center text-white/70 hover:text-white hover:border-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all duration-300 cursor-pointer z-30 opacity-0 group-hover:opacity-100 hidden md:flex"
                             aria-label="Slide suivante"
                         >
-                            <ChevronRight className="w-8 h-8 text-white" />
+                            <ChevronRight className="w-6 h-6" />
                         </button>
 
-                        {/* Pagination Dots */}
-                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+                        {/* Pagination Indicators - Centered at bottom */}
+                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3">
                             {heroSlides.map((_, index) => (
                                 <button 
                                     key={index} 
                                     onClick={() => setCurrentSlide(index)}
-                                    className={`h-2 rounded-full transition-all duration-500 ease-in-out ${currentSlide === index ? 'w-10 bg-gold' : 'w-2 bg-white/30 hover:bg-white/50'}`}
+                                    className={`h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === index ? 'w-10 bg-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.5)]' : 'w-2 bg-white/30 hover:bg-white/60'}`}
                                     aria-label={`Aller à la slide ${index + 1}`}
                                 ></button>
                             ))}
                         </div>
                     </div>
-                </div>
             </section>
 
 

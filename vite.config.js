@@ -6,6 +6,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    fs: {
+      allow: [
+        '.',
+        'C:/Users/user/.gemini/antigravity-ide/brain/53331b9e-1292-4ff4-a58f-25255b162690'
+      ]
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:8000',

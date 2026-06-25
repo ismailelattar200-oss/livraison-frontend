@@ -46,7 +46,7 @@ const CuisineDashboard = () => {
 
     const pieData = [
         { name: 'Nouvelles', value: nouvelles, color: '#3b82f6' },
-        { name: 'En Préparation', value: enPreparation, color: '#f07c33' },
+        { name: 'En Préparation', value: enPreparation, color: '#8b5cf6' },
         { name: 'Prêtes', value: pretes, color: '#6d28d9' },
     ].filter(d => d.value > 0);
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LayoutGrid, Package, Settings, LogOut, ChevronDown } from 'lucide-react';
+import LivreurAiChatWidget from '../components/delivery/LivreurAiChatWidget';
 
 const LivreurLayout = () => {
     const { user, logout } = useAuth();
@@ -89,7 +90,7 @@ const LivreurLayout = () => {
             <main className="flex-1 ml-[260px] flex flex-col min-h-screen min-w-0 bg-[#0F1117]">
                 {/* Top Header */}
                 <header className="h-[80px] flex items-center justify-between px-8 bg-transparent">
-                    <h1 className="text-xl font-bold text-white">{pageTitle}</h1>
+                    <h1 className="font-display text-2xl font-bold text-white tracking-wide">{pageTitle}</h1>
 
                     <div className="flex items-center relative">
                         <div 
@@ -127,8 +128,9 @@ const LivreurLayout = () => {
                 </header>
 
                 {/* Page Content */}
-                <div className="flex-1 p-8 pt-2 overflow-y-auto">
+                <div className="flex-1 p-8 pt-2 overflow-y-auto relative">
                     <Outlet />
+                    <LivreurAiChatWidget />
                 </div>
             </main>
         </div>

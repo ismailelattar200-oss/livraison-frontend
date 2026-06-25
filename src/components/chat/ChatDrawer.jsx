@@ -38,7 +38,7 @@ const ChatDrawer = ({ isOpen, onClose }) => {
 
     const initialGreeting = {
         role: 'assistant',
-        content: "Salam & Bienvenue ! 🌙 Je suis l'assistant virtuel gastronomique MAREA.\nComment puis-je vous régaler aujourd'hui ?\n\n💬 Nous pouvons échanger en Français, Arabe ou Darija !",
+        content: "Salam & Bienvenue ! 🌙 Je suis l'assistant virtuel gastronomique MAREA.\nComment puis-je vous régaler aujourd'hui ?\n\n🔥 **Quick Wins** : Demandez-moi le statut de votre commande, des suggestions selon l'heure ou nos options sans gluten !\n💬 *Échangeons en Français, Arabe ou Darija !*",
         time: getCurrentTime(),
         isGreeting: true
     };
@@ -363,6 +363,34 @@ const ChatDrawer = ({ isOpen, onClose }) => {
                                                     >
                                                         <Clock className="w-3.5 h-3.5 text-emerald-400" />
                                                         Horaires & Infos
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleSend(null, "أين طلبي #MAR-001?")}
+                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/15 text-gray-200 border border-white/15 rounded-xl px-3 py-2 transition-all"
+                                                    >
+                                                        <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                                                        📦 تتبع طلب
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleSend(null, "شنو تنصحني؟")}
+                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/15 text-gray-200 border border-white/15 rounded-xl px-3 py-2 transition-all"
+                                                    >
+                                                        <Sparkles className="w-3.5 h-3.5 text-gold" />
+                                                        💡 شنو تنصحني؟
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleSend(null, "عندي حساسية للقمح")}
+                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/15 text-gray-200 border border-white/15 rounded-xl px-3 py-2 transition-all"
+                                                    >
+                                                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                                                        🌾 حساسية الطعام
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleSend(null, "شنو هما العروض؟")}
+                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/15 text-gray-200 border border-white/15 rounded-xl px-3 py-2 transition-all"
+                                                    >
+                                                        <Tag className="w-3.5 h-3.5 text-rose-400" />
+                                                        🔥 العروض الخاصة
                                                     </button>
                                                 </div>
                                             )}
