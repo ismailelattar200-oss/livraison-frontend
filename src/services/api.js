@@ -1,12 +1,12 @@
 import axios from 'axios';
 
 // Set up Axios defaults
-axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 axios.defaults.withCredentials = true; // Required for Sanctum CSRF
 
 // Create an axios instance with /api prefix for admin/API calls
 const apiInstance = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: (import.meta.env.VITE_API_URL || 'http://localhost:8000') + '/api',
   withCredentials: true,
 });
 
