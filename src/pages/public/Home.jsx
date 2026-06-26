@@ -110,9 +110,9 @@ const Home = () => {
             )}
 
             {/* Premium Hero Section Redesign - Floating Card Layout */}
-            <section className="relative w-full pt-28 pb-16 flex items-center justify-center bg-cream">
+            <section className="relative w-full pt-28 pb-16 px-0 md:px-8 lg:px-12 flex items-center justify-center bg-cream">
                 {/* Main Banner Container - Soft Luxury Gastronomy Card */}
-                <div className="w-full max-w-[1500px] h-[60vh] min-h-[500px] max-h-[700px] mx-4 md:mx-8 lg:mx-12 rounded-[2rem] relative overflow-hidden group bg-[#1A1A1A] shadow-[0_20px_60px_rgba(30,22,17,0.5)] border border-[#D4AF37]/30 backdrop-blur-md">
+                <div className="w-full max-w-[1500px] h-[60vh] min-h-[500px] max-h-[700px] rounded-none md:rounded-[2rem] relative overflow-hidden group bg-[#1A1A1A] shadow-[0_20px_60px_rgba(30,22,17,0.5)] border-y md:border md:border-x-0 border-[#D4AF37]/30 backdrop-blur-md">
                     
                     {/* Slides loop */}
                     {heroSlides.map((slide, index) => (
@@ -127,11 +127,11 @@ const Home = () => {
                                 <div className="absolute inset-0 bg-gradient-to-tr from-[#2D2219]/40 via-transparent to-transparent pointer-events-none"></div>
                                 
                                 {/* Content container */}
-                                <div className="relative z-20 h-full flex flex-col justify-center items-start px-12 sm:px-16 md:px-24 lg:px-32 max-w-[800px]">
+                                <div className="relative z-20 h-full flex flex-col justify-center items-start px-6 sm:px-12 md:px-20 lg:px-32 max-w-[800px]">
                                     
                                     {/* Badge */}
                                     <div className="mb-6 overflow-hidden">
-                                        <span className="inline-flex items-center px-6 py-2 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-[0.35em] border border-[#D4AF37]/40 text-[#D4AF37] bg-[#1E1611]/60 backdrop-blur-md shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+                                        <span className="inline-flex items-center px-4 sm:px-6 py-2 rounded-full text-[9px] sm:text-xs font-semibold uppercase tracking-widest sm:tracking-[0.35em] border border-[#D4AF37]/40 text-[#D4AF37] bg-[#1E1611]/60 backdrop-blur-md shadow-[0_0_20px_rgba(212,175,55,0.1)] text-center leading-tight">
                                             <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mr-3 animate-pulse"></span>
                                             {slide.badge}
                                         </span>

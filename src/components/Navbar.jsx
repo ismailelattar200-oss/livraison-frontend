@@ -43,6 +43,17 @@ const Navbar = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [mobileMenuOpen]);
+
     const handleLogout = async () => {
         setIsUserDropdownOpen(false);
         setMobileMenuOpen(false);
@@ -261,14 +272,13 @@ const Navbar = () => {
                                 </span>
                             )}
                         </Link>
-                        <button onClick={() => setIsCartOpen(true)} className="flex items-center gap-3 text-white/90 hover:text-gold transition-colors p-2 w-full text-left">
+                        <button onClick={() => setIsCartOpen(true)} className="relative text-white/90 hover:text-gold transition-colors p-1">
                             <ShoppingCart className="w-6 h-6" />
                             {cartCount > 0 && (
-                                <span className="bg-gold text-navy-deep text-xs font-bold px-2 py-0.5 rounded-full">
+                                <span className="absolute -top-1 -right-1 bg-gold text-navy-deep text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-black-rich">
                                     {cartCount}
                                 </span>
                             )}
-                            <span className="font-medium text-lg">Mon Panier</span>
                         </button>
                         <button 
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -282,10 +292,10 @@ const Navbar = () => {
 
             {/* Mobile Menu */}
             <div 
-                className={`lg:hidden bg-black-rich absolute w-full shadow-2xl transition-all duration-300 ease-in-out border-t border-white/5 overflow-hidden
-                ${mobileMenuOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}
+                className={`lg:hidden bg-black-rich absolute w-full shadow-2xl transition-all duration-300 ease-in-out border-t border-white/5 overflow-y-auto no-scrollbar
+                ${mobileMenuOpen ? 'max-h-[calc(100dvh-80px)] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
             >
-                <div className="px-5 pt-6 pb-8 space-y-6 flex flex-col">
+                <div className="px-5 pt-6 pb-28 space-y-6 flex flex-col">
                     {/* Mobile Search */}
                     <div className="relative">
                         <input 
