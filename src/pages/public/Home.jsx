@@ -14,34 +14,44 @@ const Home = () => {
     const { favorites, toggleFavorite, isFavorite } = useFavorites();
     const { addToCart, setIsCartOpen } = useCart();
     const navigate = useNavigate();
+    const [touchStart, setTouchStart] = useState(null);
 
     const heroSlides = [
         {
-            bgGradient: "bg-[#0A0A0A]",
-            image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=2000&q=100", // Dark, beautiful gourmet meat/steak/food
-            badge: "GASTRONOMIE MÉDITERRANÉENNE",
-            title: "Art Culinaire",
-            description: "Une cuisson parfaite aux fines herbes fraîches et citron braisé.",
-            buttonText: "Commander",
-            buttonLink: "/menu"
-        },
-        {
-            bgGradient: "bg-[#0A0A0A]",
-            image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=2000&q=100", // Extremely appetizing, bright but moody gourmet food
-            badge: "PLATEAU ROYAL",
+            number: "01",
+            shortTitle: "Plateau Royal",
+            badge: "GASTRONOMIE FINE",
             title: "Saveurs d'Exception",
-            description: "Sélection premium de nos chefs dans une harmonie de saveurs.",
-            buttonText: "Voir le Menu",
-            buttonLink: "/menu"
+            highlight: "Plateau Royal",
+            description: "Une sélection raffinée de nos chefs étoilés, dressée avec des ingrédients prestigieux sur céramique noire dans une pure ambiance haute couture.",
+            buttonText: "Commander le Plateau",
+            buttonLink: "/menu",
+            image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=2000&q=100",
+            bgPosition: "bg-[position:center_center]"
         },
         {
-            bgGradient: "bg-[#0A0A0A]",
-            image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=2000&q=100", // Bright, colorful gourmet sushi/seafood on dark background
-            badge: "EXPÉRIENCE VIP",
-            title: "Créations Uniques",
-            description: "Une explosion de saveurs dans une présentation spectaculaire.",
-            buttonText: "Réserver",
-            buttonLink: "/menu"
+            number: "02",
+            shortTitle: "Expérience VIP",
+            badge: "ATMOSPHÈRE PRESTIGIEUSE",
+            title: "Service d'Excellence",
+            highlight: "Expérience VIP",
+            description: "Une table somptueusement dressée sous une lumière tamisée aux reflets dorés pour sublimer chacun de vos dîners d'exception chez MAREA.",
+            buttonText: "Réserver une Table",
+            buttonLink: "/menu",
+            image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=2000&q=100",
+            bgPosition: "bg-[position:center_center]"
+        },
+        {
+            number: "03",
+            shortTitle: "Livraison Premium",
+            badge: "SERVICE EXCLUSIF",
+            title: "Livraison de Luxe",
+            highlight: "À Domicile",
+            description: "L'excellence gastronomique de nos cuisines livrée directement chez vous dans un écrin noir mat isotherme d'une élégance absolue.",
+            buttonText: "Commander en Ligne",
+            buttonLink: "/menu",
+            image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=2000&q=100",
+            bgPosition: "bg-[position:center_center]"
         }
     ];
 
@@ -50,10 +60,19 @@ const Home = () => {
             setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
         }, 5000);
         return () => clearInterval(timer);
-    }, [heroSlides.length]);
+    }, [currentSlide, heroSlides.length]);
 
     const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+
+    const handleTouchStart = (e) => setTouchStart(e.targetTouches[0].clientX);
+    const handleTouchEnd = (e) => {
+        if (!touchStart) return;
+        const diff = touchStart - e.changedTouches[0].clientX;
+        if (diff > 50) nextSlide();
+        if (diff < -50) prevSlide();
+        setTouchStart(null);
+    };
 
     const handleToggleFavorite = (e, id) => {
         e.stopPropagation();
@@ -109,88 +128,93 @@ const Home = () => {
                 </div>
             )}
 
-            {/* Premium Hero Section Redesign - Floating Card Layout */}
-            <section className="relative w-full pt-28 pb-16 px-0 md:px-8 lg:px-12 flex items-center justify-center bg-cream">
-                {/* Main Banner Container - Soft Luxury Gastronomy Card */}
-                <div className="w-full max-w-[1500px] h-[60vh] min-h-[500px] max-h-[700px] rounded-none md:rounded-[2rem] relative overflow-hidden group bg-[#1A1A1A] shadow-[0_20px_60px_rgba(30,22,17,0.5)] border-y md:border md:border-x-0 border-[#D4AF37]/30 backdrop-blur-md">
-                    
-                    {/* Slides loop */}
+            {/* LUXIFY Style Hero Carousel Section */}
+            <section className="relative w-full pt-24 sm:pt-28 pb-12 sm:pb-16 px-4 sm:px-6 md:px-8 lg:px-12 bg-cream">
+                {/* Main Floating Card Carousel Container */}
+                <div 
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                    className="w-full mx-auto max-w-[1400px] h-[60vh] min-h-[460px] sm:min-h-[520px] max-h-[650px] rounded-2xl sm:rounded-3xl relative overflow-hidden group bg-[#161828] shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-[#D4AF37]/25 select-none"
+                >
+                    {/* Slides loop - Smooth Crossfade */}
                     {heroSlides.map((slide, index) => (
                         <div 
                             key={index}
-                            className={`absolute inset-0 bg-cover bg-center md:bg-right transition-opacity duration-1000 ease-in-out ${currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
-                            style={{ backgroundImage: `url('${slide.image}')` }}
+                            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out overflow-hidden ${currentSlide === index ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'}`}
                         >
-                                {/* Smooth Image Blending Overlay - Soft warm luxury gradient */}
-                                <div className="absolute inset-y-0 left-0 w-full md:w-[75%] lg:w-[65%] bg-gradient-to-r from-[#1E1611] via-[#1A1A1A]/90 to-transparent"></div>
-                                {/* Ambient Warm Glow */}
-                                <div className="absolute inset-0 bg-gradient-to-tr from-[#2D2219]/40 via-transparent to-transparent pointer-events-none"></div>
-                                
-                                {/* Content container */}
-                                <div className="relative z-20 h-full flex flex-col justify-center items-start px-6 sm:px-12 md:px-20 lg:px-32 max-w-[800px]">
-                                    
-                                    {/* Badge */}
-                                    <div className="mb-6 overflow-hidden">
-                                        <span className="inline-flex items-center px-4 sm:px-6 py-2 rounded-full text-[9px] sm:text-xs font-semibold uppercase tracking-widest sm:tracking-[0.35em] border border-[#D4AF37]/40 text-[#D4AF37] bg-[#1E1611]/60 backdrop-blur-md shadow-[0_0_20px_rgba(212,175,55,0.1)] text-center leading-tight">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mr-3 animate-pulse"></span>
+                            {/* Background Image with Slow Zoom Animation */}
+                            <div 
+                                className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 ${slide.bgPosition || 'bg-[position:center_center]'} ${currentSlide === index ? 'animate-hero-zoom' : 'scale-100'}`}
+                                style={{ backgroundImage: `url('${slide.image}')` }}
+                            />
+
+                            {/* Subtle light overlay so the background photo shines brightly across the entire card */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent sm:bg-gradient-to-r sm:from-black/80 sm:via-black/40 sm:via-50% sm:to-transparent"></div>
+                            
+                            {/* Content container inside Carousel */}
+                            <div className="relative z-20 h-full flex flex-col justify-center items-start px-6 sm:px-12 md:px-16 lg:px-24 max-w-[720px]">
+                                <div key={`${index}-${currentSlide === index ? 'active' : 'inactive'}`} className="w-full">
+                                    {/* Gold Badge */}
+                                    <div className={currentSlide === index ? "animate-hero-badge" : "opacity-0"}>
+                                        <span className="inline-flex items-center gap-2 border border-[#D4AF37]/60 rounded-full px-4 sm:px-5 py-1.5 text-[11px] sm:text-xs font-bold text-[#D4AF37] uppercase tracking-widest bg-[#111322]/60 backdrop-blur-md mb-4 sm:mb-6 shadow-[0_0_15px_rgba(212,175,55,0.25)]">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse"></span>
                                             {slide.badge}
                                         </span>
                                     </div>
                                     
-                                    {/* Main Title - Pure white with soft warm shadow */}
-                                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[75px] font-display font-normal text-white mb-6 leading-[1.05] drop-shadow-[0_4px_15px_rgba(45,34,25,0.6)] tracking-tight">
-                                        {slide.title}
+                                    {/* Main Title */}
+                                    <h1 className={`text-3xl sm:text-5xl md:text-6xl font-display font-bold text-white mb-3 sm:mb-5 tracking-tight leading-tight sm:leading-tight drop-shadow-md ${currentSlide === index ? "animate-hero-title" : "opacity-0"}`}>
+                                        {slide.title} <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#DFBF68] to-[#F3E5AB]">{slide.highlight}</span>
                                     </h1>
                                     
-                                    {/* Subtitle/Description - Soft beige/cream */}
-                                    <p className="text-base sm:text-lg text-[#EAE3D2] font-sans font-light mb-12 max-w-[500px] leading-relaxed drop-shadow-sm">
+                                    {/* Subtitle/Description */}
+                                    <p className={`text-sm sm:text-base md:text-lg text-gray-200 font-light mb-6 sm:mb-8 leading-relaxed drop-shadow max-w-[520px] ${currentSlide === index ? "animate-hero-desc" : "opacity-0"}`}>
                                         {slide.description}
                                     </p>
                                     
-                                    {/* CTA Button - Warm golden gradient with glow */}
-                                    <div>
+                                    {/* CTA Button */}
+                                    <div className={currentSlide === index ? "animate-hero-btn pt-1" : "opacity-0"}>
                                         <Link 
                                             to={slide.buttonLink} 
-                                            className="group relative inline-flex items-center justify-center px-10 py-4 font-sans font-semibold text-[13px] sm:text-sm uppercase tracking-widest text-[#1E1611] bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] rounded-full overflow-hidden transition-all hover:scale-105 shadow-[0_10px_20px_rgba(212,175,55,0.3)] hover:shadow-[0_15px_30px_rgba(212,175,55,0.6)]"
+                                            className="inline-flex items-center gap-3 px-8 sm:px-10 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#DFBF68] to-[#F3E5AB] text-[#111322] font-extrabold text-sm sm:text-base hover:opacity-100 transition-all duration-300 hover:scale-105 shadow-[0_6px_20px_rgba(212,175,55,0.4)] hover:shadow-[0_0_30px_rgba(212,175,55,0.9)] active:scale-95 group/btn border border-white/30"
                                         >
-                                            <span className="absolute inset-0 w-full h-full bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></span>
-                                            <span className="relative flex items-center gap-3">
-                                                {slide.buttonText} 
-                                            </span>
+                                            <span>{slide.buttonText}</span>
+                                            <span className="font-extrabold text-lg transition-transform duration-300 group-hover/btn:translate-x-2">→</span>
                                         </Link>
                                     </div>
                                 </div>
                             </div>
-                        ))}
-
-                        {/* Navigation Arrows - Left/Right edges */}
-                        <button 
-                            onClick={prevSlide}
-                            className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/10 bg-black/40 backdrop-blur-xl flex items-center justify-center text-white/70 hover:text-white hover:border-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all duration-300 cursor-pointer z-30 opacity-0 group-hover:opacity-100 hidden md:flex"
-                            aria-label="Slide précédente"
-                        >
-                            <ChevronLeft className="w-6 h-6" />
-                        </button>
-                        <button 
-                            onClick={nextSlide}
-                            className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-white/10 bg-black/40 backdrop-blur-xl flex items-center justify-center text-white/70 hover:text-white hover:border-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all duration-300 cursor-pointer z-30 opacity-0 group-hover:opacity-100 hidden md:flex"
-                            aria-label="Slide suivante"
-                        >
-                            <ChevronRight className="w-6 h-6" />
-                        </button>
-
-                        {/* Pagination Indicators - Centered at bottom */}
-                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3">
-                            {heroSlides.map((_, index) => (
-                                <button 
-                                    key={index} 
-                                    onClick={() => setCurrentSlide(index)}
-                                    className={`h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === index ? 'w-10 bg-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.5)]' : 'w-2 bg-white/30 hover:bg-white/60'}`}
-                                    aria-label={`Aller à la slide ${index + 1}`}
-                                ></button>
-                            ))}
                         </div>
+                    ))}
+
+                    {/* Navigation Arrows - Circular buttons INSIDE carousel edges */}
+                    <button 
+                        onClick={prevSlide}
+                        className="absolute left-4 sm:left-6 md:left-8 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#111322]/60 border border-[#D4AF37]/30 hover:border-[#D4AF37] hover:bg-gradient-to-r hover:from-[#D4AF37] hover:to-[#DFBF68] hover:text-[#111322] backdrop-blur-md flex items-center justify-center text-[#D4AF37] transition-all duration-300 cursor-pointer z-30 opacity-70 sm:opacity-0 group-hover:opacity-100 hover:scale-110 hover:shadow-[0_0_20px_rgba(212,175,55,0.6)] active:scale-95"
+                        aria-label="Slide précédente"
+                    >
+                        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:-translate-x-0.5" />
+                    </button>
+                    <button 
+                        onClick={nextSlide}
+                        className="absolute right-4 sm:right-6 md:right-8 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#111322]/60 border border-[#D4AF37]/30 hover:border-[#D4AF37] hover:bg-gradient-to-r hover:from-[#D4AF37] hover:to-[#DFBF68] hover:text-[#111322] backdrop-blur-md flex items-center justify-center text-[#D4AF37] transition-all duration-300 cursor-pointer z-30 opacity-70 sm:opacity-0 group-hover:opacity-100 hover:scale-110 hover:shadow-[0_0_20px_rgba(212,175,55,0.6)] active:scale-95"
+                        aria-label="Slide suivante"
+                    >
+                        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-1" />
+                    </button>
+
+                    {/* Dot Indicators - Minimalist floating directly at bottom of carousel */}
+                    <div className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2.5 sm:gap-3">
+                        {heroSlides.map((_, index) => (
+                            <button 
+                                key={index} 
+                                onClick={() => setCurrentSlide(index)}
+                                className={`h-2 rounded-full transition-all duration-500 ease-out cursor-pointer ${currentSlide === index ? 'w-8 sm:w-10 bg-gradient-to-r from-[#D4AF37] via-[#DFBF68] to-[#F3E5AB] shadow-[0_0_12px_rgba(212,175,55,0.9)]' : 'w-2 bg-white/50 hover:bg-[#D4AF37]/80 hover:w-3'}`}
+                                aria-label={`Aller à la slide ${index + 1}`}
+                            ></button>
+                        ))}
                     </div>
+                </div>
             </section>
 
 

@@ -240,79 +240,85 @@ const ChatDrawer = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex justify-end bg-black/60 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none pointer-events-auto md:pointer-events-none">
+        <div className="fixed inset-0 z-[100] flex justify-end bg-black/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none pointer-events-auto md:pointer-events-none transition-all duration-300">
             {/* Click outside to close on mobile */}
-            <div className="absolute inset-0 md:hidden" onClick={onClose} />
+            <div className="absolute inset-0 md:hidden animate-fadeIn" onClick={onClose} />
 
-            {/* Chat Drawer Window Panel */}
-            <div className="pointer-events-auto relative flex w-full flex-col bg-[#0A0F1D] shadow-[0_10px_50px_rgba(0,0,0,0.8)] transition-all duration-300 animate-in slide-in-from-bottom md:slide-in-from-right md:fixed md:bottom-24 md:right-6 md:w-[420px] md:h-[650px] md:max-h-[calc(100vh-7rem)] md:rounded-3xl border border-gold/30 overflow-hidden h-[88vh] mt-auto rounded-t-[2.5rem] md:mt-0">
+            {/* Chat Drawer Window Panel - Luxury Glassmorphism */}
+            <div className="pointer-events-auto relative flex w-full flex-col bg-[#0B0F19]/95 backdrop-blur-2xl shadow-[0_25px_80px_-15px_rgba(0,0,0,0.95),0_0_35px_rgba(201,168,76,0.18)] transition-all duration-500 animate-in slide-in-from-bottom md:slide-in-from-right md:fixed md:bottom-24 md:right-6 md:w-[430px] md:h-[670px] md:max-h-[calc(100vh-7rem)] md:rounded-[2.2rem] border border-white/10 ring-1 ring-gold/25 overflow-hidden h-[88vh] mt-auto rounded-t-[2.5rem] md:mt-0">
                 
-                {/* 1. Sleek Gradient Header */}
-                <div className="relative flex items-center justify-between px-6 py-3.5 bg-gradient-to-r from-[#1A213C] via-[#12172A] to-[#0A0F1D] border-b border-white/10 shadow-md shrink-0">
-                    <div className="flex items-center gap-3">
-                        <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-gold/30 to-gold/5 border border-gold/40 shadow-inner">
-                            <Moon className="h-5 w-5 text-gold fill-gold/40" />
-                            <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
+                {/* Top Subtle Golden Glow Accent Bar */}
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent opacity-90 z-20" />
+
+                {/* 1. Sleek Luxury Gradient Header */}
+                <div className="relative flex items-center justify-between px-6 py-4 bg-gradient-to-b from-[#161D31]/95 to-[#0B0F19]/90 backdrop-blur-md border-b border-white/10 shadow-lg shrink-0 z-10">
+                    <div className="flex items-center gap-3.5">
+                        <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-gold/25 via-gold/10 to-transparent border border-gold/40 shadow-[0_0_20px_rgba(201,168,76,0.25)]">
+                            <Moon className="h-5 w-5 text-gold fill-gold/30 animate-pulse" />
+                            <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 m-auto"></span>
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 m-auto ring-2 ring-[#0B0F19]"></span>
                             </span>
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <h3 className="font-display font-bold text-white text-sm tracking-wide">Assistant MAREA</h3>
+                                <h3 className="font-display font-bold text-white text-base tracking-wide flex items-center gap-1.5">
+                                    Assistant <span className="text-gold font-serif">MAREA</span>
+                                </h3>
                                 {currentStep !== 'home' && (
-                                    <span className="px-2 py-0.5 rounded-full bg-gold/20 text-[10px] text-gold font-sans font-bold flex items-center gap-1 border border-gold/30">
+                                    <span className="px-2.5 py-0.5 rounded-full bg-gold/20 text-[10px] text-gold font-sans font-bold flex items-center gap-1 border border-gold/30 shadow-sm animate-fadeIn">
                                         <Tag className="w-2.5 h-2.5" />
                                         {currentStep === 'categories' ? 'Catégories' : currentStep === 'dishes' ? selectedCategory?.name : 'Commande'}
                                     </span>
                                 )}
                             </div>
-                            <p className="text-[11px] text-emerald-400 font-medium tracking-wide flex items-center gap-1 mt-0.5">
-                                En ligne • Réponse instantanée
+                            <p className="text-[11px] text-emerald-400 font-medium tracking-wide flex items-center gap-1.5 mt-0.5">
+                                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                En ligne • Intelligence Gastronomique
                             </p>
                         </div>
                     </div>
                     
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                         <button
                             onClick={handleReset}
                             title="Nouvelle conversation"
-                            className="p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-all"
+                            className="p-2 text-gray-400 hover:text-white bg-white/[0.03] hover:bg-white/10 border border-white/5 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-sm"
                         >
                             <RefreshCw className="w-4 h-4" />
                         </button>
                         <button
                             onClick={onClose}
                             aria-label="Fermer"
-                            className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all"
+                            className="p-2 text-gray-400 hover:text-white bg-white/[0.03] hover:bg-white/10 border border-white/5 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-sm"
                         >
                             <X className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
 
-                {/* 2. Interactive Navigation Sub-header (ex: < Retour au menu  ● ● ○ ○) */}
+                {/* 2. Interactive Navigation Sub-header */}
                 {currentStep !== 'home' && (
-                    <div className="px-5 py-2.5 bg-[#121729]/90 border-b border-white/5 flex items-center justify-between text-xs text-gold font-medium shrink-0 animate-fadeIn">
+                    <div className="px-6 py-2.5 bg-[#121829]/95 backdrop-blur-md border-b border-white/10 flex items-center justify-between text-xs text-gold font-semibold shrink-0 animate-fadeIn z-10 shadow-sm">
                         <button 
                             onClick={handleBackStep}
-                            className="flex items-center gap-1 hover:text-white transition-colors py-0.5"
+                            className="flex items-center gap-1.5 hover:text-white transition-all py-0.5 group"
                         >
-                            <ChevronLeft className="w-4 h-4" />
+                            <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
                             {currentStep === 'categories' ? 'Retour à l\'accueil' : currentStep === 'dishes' ? 'Catégories' : 'Retour au panier'}
                         </button>
                         
                         {/* Pagination Progress Dots */}
                         <div className="flex items-center gap-1.5">
-                            <span className={`h-2 w-2 rounded-full ${currentStep !== 'home' ? 'bg-gold shadow-[0_0_8px_#C9A84C]' : 'bg-white/20'}`}></span>
-                            <span className={`h-2 w-2 rounded-full ${in_array(currentStep, ['dishes', 'checkout']) ? 'bg-gold shadow-[0_0_8px_#C9A84C]' : 'bg-white/20'}`}></span>
-                            <span className={`h-2 w-2 rounded-full ${currentStep === 'checkout' ? 'bg-gold shadow-[0_0_8px_#C9A84C]' : 'bg-white/20'}`}></span>
+                            <span className={`h-2 w-2 rounded-full transition-all duration-300 ${currentStep !== 'home' ? 'bg-gold w-4 shadow-[0_0_8px_#C9A84C]' : 'bg-white/20'}`}></span>
+                            <span className={`h-2 w-2 rounded-full transition-all duration-300 ${in_array(currentStep, ['dishes', 'checkout']) ? 'bg-gold w-4 shadow-[0_0_8px_#C9A84C]' : 'bg-white/20'}`}></span>
+                            <span className={`h-2 w-2 rounded-full transition-all duration-300 ${currentStep === 'checkout' ? 'bg-gold w-4 shadow-[0_0_8px_#C9A84C]' : 'bg-white/20'}`}></span>
                         </div>
                     </div>
                 )}
 
                 {/* 3. Messages Body Canvas */}
-                <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar bg-[#080C17] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(201,168,76,0.1),rgba(255,255,255,0))]">
+                <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar bg-[#070A12] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(201,168,76,0.12),rgba(0,0,0,0))]">
                     {messages.map((msg, index) => {
                         const isUser = msg.role === 'user';
                         const { cleanText, parsedOrderData } = !isUser ? parseMessageContent(msg.content) : { cleanText: msg.content, parsedOrderData: null };
@@ -323,92 +329,105 @@ const ChatDrawer = ({ isOpen, onClose }) => {
                                 <div className={`flex gap-3 max-w-[92%] ${isUser ? 'ml-auto flex-row-reverse' : ''}`}>
                                     
                                     {/* Avatar */}
-                                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-lg mt-1 ${
+                                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl shadow-md mt-1 ${
                                         isUser 
-                                            ? 'bg-gradient-to-br from-gold to-amber text-[#0A0F1D] font-bold' 
-                                            : 'bg-[#151B2E] border border-gold/40 text-gold'
+                                            ? 'bg-gradient-to-br from-gold via-[#DFBF68] to-amber text-[#0A0F1D] font-bold shadow-gold/20' 
+                                            : 'bg-[#151C33] border border-gold/40 text-gold shadow-black/50'
                                     }`}>
                                         {isUser ? <User className="h-4 w-4 stroke-[2.5]" /> : <Moon className="h-4 w-4 fill-gold/30" />}
                                     </div>
 
                                     {/* Card Container */}
-                                    <div className="flex flex-col gap-2 flex-1">
-                                        <div className={`rounded-2xl px-4 py-3.5 text-xs leading-relaxed shadow-xl whitespace-pre-line relative ${
+                                    <div className="flex flex-col gap-1.5 flex-1">
+                                        <div className={`rounded-2xl px-4 py-3.5 text-xs leading-relaxed shadow-xl whitespace-pre-line relative transition-all ${
                                             isUser
-                                                ? 'bg-gradient-to-r from-[#C9A84C] to-[#DFBF68] text-[#0A0F1D] font-medium rounded-tr-none shadow-gold/10'
-                                                : 'bg-[#121729] text-gray-100 rounded-tl-none border border-white/10 shadow-black/40'
+                                                ? 'bg-gradient-to-r from-gold via-[#DFBF68] to-[#C9A84C] text-[#0A0F1D] font-semibold rounded-tr-sm shadow-[0_4px_15px_rgba(201,168,76,0.2)]'
+                                                : 'bg-[#13192B]/95 backdrop-blur-md text-gray-100 rounded-tl-sm border border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]'
                                         }`}>
                                             {cleanText}
 
-                                            {/* Action Pill Buttons inside Greeting Card (Mockup Luxify) */}
+                                            {/* Quick Wins Structured Grid inside Greeting Card */}
                                             {msg.isGreeting && (
-                                                <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap gap-2">
+                                                <div className="mt-4 pt-3 border-t border-white/10">
+                                                    {/* Primary CTA Banner */}
                                                     <button 
                                                         onClick={() => handleOpenCategories("Je veux commander")}
-                                                        className="inline-flex items-center gap-1.5 text-[11px] font-bold bg-gold text-[#0A0F1D] hover:bg-gold/90 rounded-xl px-3.5 py-2 transition-all shadow-md hover:scale-105"
+                                                        className="w-full mb-2.5 flex items-center justify-center gap-2 text-xs font-bold bg-gradient-to-r from-gold via-[#DFBF68] to-amber text-[#0A0F1D] rounded-xl py-3 px-4 shadow-[0_4px_15px_rgba(201,168,76,0.3)] hover:shadow-[0_6px_20px_rgba(201,168,76,0.5)] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                                                     >
-                                                        <ShoppingBag className="w-3.5 h-3.5" />
-                                                        Commander en ligne
+                                                        <ShoppingBag className="w-4 h-4 stroke-[2.5]" />
+                                                        <span>Commander en ligne maintenant</span>
+                                                        <ArrowRight className="w-4 h-4 ml-auto" />
                                                     </button>
-                                                    <button 
-                                                        onClick={() => handleOpenCategories("Montrez-moi le menu")}
-                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/15 text-gray-200 border border-white/15 rounded-xl px-3 py-2 transition-all"
-                                                    >
-                                                        <UtensilsCrossed className="w-3.5 h-3.5 text-gold" />
-                                                        Voir la carte
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleSend(null, "Quels sont vos horaires et votre adresse ?")}
-                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/15 text-gray-200 border border-white/15 rounded-xl px-3 py-2 transition-all"
-                                                    >
-                                                        <Clock className="w-3.5 h-3.5 text-emerald-400" />
-                                                        Horaires & Infos
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleSend(null, "أين طلبي #MAR-001?")}
-                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/15 text-gray-200 border border-white/15 rounded-xl px-3 py-2 transition-all"
-                                                    >
-                                                        <MapPin className="w-3.5 h-3.5 text-amber-400" />
-                                                        📦 تتبع طلب
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleSend(null, "شنو تنصحني؟")}
-                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/15 text-gray-200 border border-white/15 rounded-xl px-3 py-2 transition-all"
-                                                    >
-                                                        <Sparkles className="w-3.5 h-3.5 text-gold" />
-                                                        💡 شنو تنصحني؟
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleSend(null, "عندي حساسية للقمح")}
-                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/15 text-gray-200 border border-white/15 rounded-xl px-3 py-2 transition-all"
-                                                    >
-                                                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                                                        🌾 حساسية الطعام
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleSend(null, "شنو هما العروض؟")}
-                                                        className="inline-flex items-center gap-1.5 text-[11px] font-medium bg-white/5 hover:bg-white/15 text-gray-200 border border-white/15 rounded-xl px-3 py-2 transition-all"
-                                                    >
-                                                        <Tag className="w-3.5 h-3.5 text-rose-400" />
-                                                        🔥 العروض الخاصة
-                                                    </button>
+
+                                                    {/* Quick Actions 2-Column Grid */}
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <button 
+                                                            onClick={() => handleOpenCategories("Montrez-moi le menu")}
+                                                            className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.04] hover:bg-gold/15 border border-white/10 hover:border-gold/40 text-gray-200 hover:text-white text-[11px] font-medium transition-all group text-left shadow-sm hover:translate-y-[-1px]"
+                                                        >
+                                                            <UtensilsCrossed className="w-4 h-4 text-gold shrink-0 transition-transform group-hover:scale-110" />
+                                                            <span className="truncate">Voir la carte</span>
+                                                        </button>
+                                                        
+                                                        <button 
+                                                            onClick={() => handleSend(null, "Quels sont vos horaires et votre adresse ?")}
+                                                            className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.04] hover:bg-emerald-500/15 border border-white/10 hover:border-emerald-500/40 text-gray-200 hover:text-white text-[11px] font-medium transition-all group text-left shadow-sm hover:translate-y-[-1px]"
+                                                        >
+                                                            <Clock className="w-4 h-4 text-emerald-400 shrink-0 transition-transform group-hover:scale-110" />
+                                                            <span className="truncate">Horaires & Infos</span>
+                                                        </button>
+                                                        
+                                                        <button 
+                                                            onClick={() => handleSend(null, "Où en est ma commande ?")}
+                                                            className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.04] hover:bg-amber-500/15 border border-white/10 hover:border-amber-500/40 text-gray-200 hover:text-white text-[11px] font-medium transition-all group text-left shadow-sm hover:translate-y-[-1px]"
+                                                        >
+                                                            <MapPin className="w-4 h-4 text-amber-400 shrink-0 transition-transform group-hover:scale-110" />
+                                                            <span className="truncate">📦 Suivre commande</span>
+                                                        </button>
+                                                        
+                                                        <button 
+                                                            onClick={() => handleSend(null, "Que me conseillez-vous du chef ?")}
+                                                            className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.04] hover:bg-gold/15 border border-white/10 hover:border-gold/40 text-gray-200 hover:text-white text-[11px] font-medium transition-all group text-left shadow-sm hover:translate-y-[-1px]"
+                                                        >
+                                                            <Sparkles className="w-4 h-4 text-gold shrink-0 transition-transform group-hover:scale-110" />
+                                                            <span className="truncate">💡 Recommandations</span>
+                                                        </button>
+                                                        
+                                                        <button 
+                                                            onClick={() => handleSend(null, "Quelles sont vos options sans gluten ou allergènes ?")}
+                                                            className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.04] hover:bg-emerald-500/15 border border-white/10 hover:border-emerald-500/40 text-gray-200 hover:text-white text-[11px] font-medium transition-all group text-left shadow-sm hover:translate-y-[-1px]"
+                                                        >
+                                                            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 transition-transform group-hover:scale-110" />
+                                                            <span className="truncate">🌾 Allergies & Infos</span>
+                                                        </button>
+                                                        
+                                                        <button 
+                                                            onClick={() => handleSend(null, "Quelles sont les offres spéciales du jour ?")}
+                                                            className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.04] hover:bg-rose-500/15 border border-white/10 hover:border-rose-500/40 text-gray-200 hover:text-white text-[11px] font-medium transition-all group text-left shadow-sm hover:translate-y-[-1px]"
+                                                        >
+                                                            <Tag className="w-4 h-4 text-rose-400 shrink-0 transition-transform group-hover:scale-110" />
+                                                            <span className="truncate">🔥 Offres & Promos</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             )}
 
                                             {/* Grille des Catégories (Step 'categories') */}
                                             {msg.isCategorySelector && (
-                                                <div className="mt-3 grid grid-cols-1 gap-2 pt-2 border-t border-white/10">
+                                                <div className="mt-3.5 grid grid-cols-1 gap-2.5 pt-3 border-t border-white/10">
                                                     {categories.map((cat) => (
                                                         <button
                                                             key={cat.id}
                                                             onClick={() => handleSelectCategory(cat)}
-                                                            className="flex items-center justify-between p-3 rounded-xl bg-[#182038] hover:bg-gold/20 border border-white/10 hover:border-gold/50 text-left transition-all group"
+                                                            className="flex items-center justify-between p-3.5 rounded-2xl bg-[#151C33]/90 hover:bg-gold/15 border border-white/10 hover:border-gold/50 text-left transition-all duration-300 group shadow-md hover:translate-x-1"
                                                         >
                                                             <div>
                                                                 <span className="font-display font-bold text-white text-xs group-hover:text-gold transition-colors">{cat.name}</span>
-                                                                <p className="text-[10px] text-gray-400 mt-0.5">{cat.description || 'Découvrir les plats'}</p>
+                                                                <p className="text-[10px] text-gray-400 mt-0.5">{cat.description || 'Spécialités de notre chef'}</p>
                                                             </div>
-                                                            <ArrowRight className="w-4 h-4 text-gold shrink-0 transition-transform group-hover:translate-x-1" />
+                                                            <div className="h-8 w-8 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-gold group-hover:text-[#0A0F1D] text-gold transition-all">
+                                                                <ArrowRight className="w-4 h-4 shrink-0 transition-transform" />
+                                                            </div>
                                                         </button>
                                                     ))}
                                                 </div>
@@ -416,48 +435,48 @@ const ChatDrawer = ({ isOpen, onClose }) => {
 
                                             {/* Liste des Plats de la Catégorie (Step 'dishes') */}
                                             {msg.isDishSelector && (
-                                                <div className="mt-3 space-y-2.5 pt-2 border-t border-white/10">
+                                                <div className="mt-3.5 space-y-3 pt-3 border-t border-white/10">
                                                     {menuItems.filter(i => (i.category_id === msg.categoryId) || !msg.categoryId).map((dish) => {
                                                         const qty = cart[dish.id]?.quantity || 0;
                                                         return (
                                                             <div 
                                                                 key={dish.id}
-                                                                className={`p-3 rounded-xl border transition-all ${
-                                                                    qty > 0 ? 'bg-gold/10 border-gold/50' : 'bg-[#182038]/80 border-white/10'
+                                                                className={`p-3.5 rounded-2xl border transition-all duration-300 ${
+                                                                    qty > 0 ? 'bg-gold/15 border-gold/60 shadow-[0_0_15px_rgba(201,168,76,0.15)]' : 'bg-[#151C33]/90 border-white/10 hover:border-white/20 shadow-md'
                                                                 }`}
                                                             >
-                                                                <div className="flex justify-between items-start gap-2">
+                                                                <div className="flex justify-between items-start gap-3">
                                                                     <div className="flex-1">
                                                                         <h4 className="font-bold text-white text-xs">{dish.name}</h4>
-                                                                        <p className="text-[10px] text-gray-400 line-clamp-2 mt-0.5">{dish.description}</p>
+                                                                        <p className="text-[10px] text-gray-400 line-clamp-2 mt-1 leading-normal">{dish.description}</p>
                                                                     </div>
-                                                                    <span className="font-display font-bold text-gold text-xs shrink-0">{dish.price} MAD</span>
+                                                                    <span className="font-display font-bold text-gold bg-gold/10 border border-gold/30 text-xs px-2.5 py-1 rounded-xl shrink-0 shadow-inner">{dish.price} MAD</span>
                                                                 </div>
 
                                                                 {/* Quantity Controls */}
-                                                                <div className="mt-2.5 flex items-center justify-end gap-2 pt-2 border-t border-white/5">
+                                                                <div className="mt-3 flex items-center justify-end gap-2 pt-2.5 border-t border-white/5">
                                                                     {qty === 0 ? (
                                                                         <button
                                                                             onClick={() => handleAddToCart(dish)}
-                                                                            className="inline-flex items-center gap-1 bg-gold hover:bg-gold/90 text-[#0A0F1D] font-bold text-[11px] px-3 py-1 rounded-lg shadow transition-all hover:scale-105"
+                                                                            className="inline-flex items-center gap-1.5 bg-gradient-to-r from-gold to-amber hover:from-[#DFBF68] hover:to-gold text-[#0A0F1D] font-bold text-[11px] px-3.5 py-1.5 rounded-xl shadow-md transition-all hover:scale-105 active:scale-95"
                                                                         >
-                                                                            <Plus className="w-3 h-3 stroke-[3]" />
+                                                                            <Plus className="w-3.5 h-3.5 stroke-[3]" />
                                                                             Ajouter
                                                                         </button>
                                                                     ) : (
-                                                                        <div className="flex items-center gap-2 bg-[#0A0F1D] px-2 py-1 rounded-lg border border-gold/40">
+                                                                        <div className="flex items-center gap-2.5 bg-[#0A0F1D] px-2.5 py-1 rounded-xl border border-gold/50 shadow-inner">
                                                                             <button 
                                                                                 onClick={() => handleRemoveFromCart(dish)}
-                                                                                className="text-gold hover:text-white p-0.5 transition-colors"
+                                                                                className="text-gold hover:text-white p-1 transition-colors"
                                                                             >
-                                                                                <Minus className="w-3 h-3 stroke-[3]" />
+                                                                                <Minus className="w-3.5 h-3.5 stroke-[3]" />
                                                                             </button>
-                                                                            <span className="font-bold text-white text-xs px-1.5">{qty}</span>
+                                                                            <span className="font-bold text-white text-xs px-1 min-w-[1.2rem] text-center">{qty}</span>
                                                                             <button 
                                                                                 onClick={() => handleAddToCart(dish)}
-                                                                                className="text-gold hover:text-white p-0.5 transition-colors"
+                                                                                className="text-gold hover:text-white p-1 transition-colors"
                                                                             >
-                                                                                <Plus className="w-3 h-3 stroke-[3]" />
+                                                                                <Plus className="w-3.5 h-3.5 stroke-[3]" />
                                                                             </button>
                                                                         </div>
                                                                     )}
@@ -471,7 +490,7 @@ const ChatDrawer = ({ isOpen, onClose }) => {
 
                                         {/* Timestamp */}
                                         {msg.time && (
-                                            <span className={`text-[10px] text-gray-500 px-1 ${isUser ? 'text-right' : 'text-left'}`}>
+                                            <span className={`text-[10px] text-gray-500 font-medium px-1.5 ${isUser ? 'text-right' : 'text-left'}`}>
                                                 {msg.time}
                                             </span>
                                         )}
@@ -495,25 +514,27 @@ const ChatDrawer = ({ isOpen, onClose }) => {
                     <div ref={messagesEndRef} />
                 </div>
 
-                {/* 4. Sticky Cart Banner (si articles sélectionnés) */}
+                {/* 4. Sticky Cart Banner */}
                 {cartTotalCount > 0 && currentStep === 'dishes' && (
-                    <div className="px-5 py-3 bg-gradient-to-r from-gold to-amber text-[#0A0F1D] flex items-center justify-between shadow-2xl shrink-0 animate-slideUp">
-                        <div className="flex items-center gap-2 font-bold text-xs">
-                            <ShoppingBag className="w-4 h-4 stroke-[2.5]" />
-                            <span>{cartTotalCount} plat(s) • {cartTotalPrice} MAD</span>
+                    <div className="px-6 py-3.5 bg-gradient-to-r from-gold via-[#DFBF68] to-amber text-[#0A0F1D] flex items-center justify-between shadow-[0_-5px_25px_rgba(201,168,76,0.3)] shrink-0 animate-slideUp z-20">
+                        <div className="flex items-center gap-2.5 font-bold text-xs">
+                            <div className="h-7 w-7 rounded-xl bg-[#0A0F1D] text-gold flex items-center justify-center font-black">
+                                {cartTotalCount}
+                            </div>
+                            <span>Panier • <span className="font-display font-black text-sm">{cartTotalPrice} MAD</span></span>
                         </div>
                         <button
                             onClick={handleGoToCheckout}
-                            className="bg-[#0A0F1D] text-gold hover:bg-black font-bold text-xs px-4 py-2 rounded-xl shadow transition-all hover:scale-105 inline-flex items-center gap-1.5"
+                            className="bg-[#0A0F1D] text-gold hover:bg-black font-bold text-xs px-4 py-2 rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95 inline-flex items-center gap-1.5 border border-gold/30"
                         >
-                            Commander
+                            <span>Valider</span>
                             <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                     </div>
                 )}
 
-                {/* 5. Sleek Floating Input Footer (Mockup Luxify) */}
-                <div className="p-4 bg-[#0A0F1D] border-t border-white/10 shrink-0">
+                {/* 5. Sleek Floating Input Footer */}
+                <div className="p-4 bg-[#0B0F19]/95 backdrop-blur-xl border-t border-white/10 shrink-0 z-20">
                     <form onSubmit={(e) => handleSend(e)} className="relative flex items-center">
                         <input
                             type="text"
@@ -521,19 +542,20 @@ const ChatDrawer = ({ isOpen, onClose }) => {
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Écrivez votre question ou message..."
                             disabled={isLoading}
-                            className="w-full bg-[#121729] border border-white/15 rounded-full pl-5 pr-14 py-3.5 text-xs text-white placeholder:text-gray-400 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all shadow-inner"
+                            className="w-full bg-[#13192B] border border-white/15 rounded-2xl pl-4 pr-12 py-3.5 text-xs text-white placeholder:text-gray-400 focus:outline-none focus:border-gold/70 focus:ring-2 focus:ring-gold/20 transition-all shadow-inner"
                         />
                         <button
                             type="submit"
                             disabled={!input.trim() || isLoading}
                             aria-label="Envoyer"
-                            className="absolute right-1.5 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-gold to-amber hover:from-gold/90 hover:to-amber/90 disabled:from-gray-700 disabled:to-gray-800 text-[#0A0F1D] transition-all hover:scale-105 active:scale-95 disabled:cursor-not-allowed shadow-lg"
+                            className="absolute right-1.5 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-gold to-amber hover:from-[#DFBF68] hover:to-gold disabled:from-gray-800 disabled:to-gray-800 disabled:text-gray-600 text-[#0A0F1D] transition-all hover:scale-105 active:scale-95 disabled:cursor-not-allowed shadow-md"
                         >
                             <Send className="h-4 w-4 ml-0.5 font-bold stroke-[2.5]" />
                         </button>
                     </form>
-                    <div className="mt-2 text-center">
-                        <span className="text-[10px] text-white/30 tracking-wider font-medium">MAREA RESTAURANT • ASSISTANT INTELLIGENT</span>
+                    <div className="mt-2.5 flex items-center justify-center gap-1.5 text-center">
+                        <Sparkles className="w-3 h-3 text-gold/60" />
+                        <span className="text-[9px] text-white/40 tracking-widest uppercase font-semibold">MAREA RESTAURANT • ASSISTANT IA PREMIUM</span>
                     </div>
                 </div>
 
