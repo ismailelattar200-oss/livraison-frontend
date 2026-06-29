@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import { Search, Filter, Package, CheckCircle2, Clock, ChefHat } from 'lucide-react';
+import { triggerNotification } from '../../components/NotificationToast';
 
 const CuisineCommandes = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const prevWaitingCountRef = useRef(null);
 
     const fetchOrders = async () => {
         try {
@@ -15,6 +17,13 @@ const CuisineCommandes = () => {
                 ['en_attente', 'en_preparation', 'pret'].includes(o.status)
             );
             kitchenOrders.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            
+            const currentWaiting = kitchenOrders.filter(o => o.status === 'en_attente').length;
+            if (prevWaitingCountRef.current !== null && currentWaiting > prevWaitingCountRef.current) {
+                triggerNotification("🔔 Nouveau Bon de Commande !", "Une nouvelle commande est en attente de préparation en cuisine.", "info");
+            }
+            prevWaitingCountRef.current = currentWaiting;
+
             setOrders(kitchenOrders);
         } catch (err) {
             console.error("Erreur chargement commandes cuisine:", err);

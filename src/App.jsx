@@ -54,6 +54,7 @@ import AdminMensajes from './pages/admin/Mensajes';
 import AdminLivreurs from './pages/admin/Livreurs';
 import AdminUsuarios from './pages/admin/Usuarios';
 import AdminSettings from './pages/admin/Settings';
+import NotificationToast from './components/NotificationToast';
 
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { user, loading } = useAuth();
@@ -74,6 +75,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 function App() {
   return (
     <FavoritesProvider>
+      <NotificationToast />
       <Routes>
         {/* Public Routes with Navbar/Footer */}
       <Route element={<PublicLayout />}>

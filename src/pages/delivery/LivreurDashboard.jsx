@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Package, Clock, Truck, CheckCircle2 } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { Link } from 'react-router-dom';
+import { triggerNotification } from '../../components/NotificationToast';
 
 const LivreurDashboard = () => {
     const { user } = useAuth();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const prevCountRef = useRef(null);
 
     useEffect(() => {
         const fetchMyOrders = async () => {
@@ -18,6 +20,13 @@ const LivreurDashboard = () => {
                 const myDeliveries = allOrders.filter(o => 
                     o.assigned_to === user?.id || (o.delivery && o.delivery.delivery_person_id === user?.id)
                 );
+                
+                const activeCount = myDeliveries.filter(o => o.status !== 'livre').length;
+                if (prevCountRef.current !== null && activeCount > prevCountRef.current) {
+                    triggerNotification("📦 Nouvelle Course Assignée !", "L'administrateur vous a attribué une nouvelle commande à livrer.", "info");
+                }
+                prevCountRef.current = activeCount;
+
                 setOrders(myDeliveries);
             } catch (err) {
                 console.error("Mode Démo Livreur actif:", err);
@@ -28,7 +37,7 @@ const LivreurDashboard = () => {
 
         if (user?.id) {
             fetchMyOrders();
-            const interval = setInterval(fetchMyOrders, 30000);
+            const interval = setInterval(fetchMyOrders, 15000);
             return () => clearInterval(interval);
         } else {
             setLoading(false);

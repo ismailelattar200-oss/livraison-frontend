@@ -6,6 +6,7 @@ const AdminLivreurs = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
+    const [showEditPassword, setShowEditPassword] = useState(false);
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
@@ -15,6 +16,7 @@ const AdminLivreurs = () => {
     const [editForm, setEditForm] = useState({
         name: '',
         email: '',
+        password: '',
         phone: '',
         vehicle: '',
         role: 'delivery'
@@ -65,10 +67,12 @@ const AdminLivreurs = () => {
         setEditForm({
             name: item.name,
             email: item.email,
+            password: '',
             phone: item.phone || '',
             vehicle: item.vehicle || '',
             role: 'delivery'
         });
+        setShowEditPassword(false);
         setIsEditModalOpen(true);
     };
 
@@ -79,7 +83,11 @@ const AdminLivreurs = () => {
     const submitEdit = async (e) => {
         e.preventDefault();
         try {
-            await api.put(`/admin/users/${itemToEdit.id}`, editForm);
+            const payload = { ...editForm };
+            if (!payload.password || payload.password.trim() === '') {
+                delete payload.password;
+            }
+            await api.put(`/admin/users/${itemToEdit.id}`, payload);
             setIsEditModalOpen(false);
             setItemToEdit(null);
             fetchUsers();
@@ -225,6 +233,15 @@ const AdminLivreurs = () => {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-400 mb-1">Véhicule</label>
                                     <input type="text" name="vehicle" value={editForm.vehicle} onChange={handleEditChange} className="w-full bg-[#12131f] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#8b5cf6]" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-400 mb-1">Nouveau mot de passe <span className="text-[11px] text-[#64748b]">(Optionnel)</span></label>
+                                    <div className="relative">
+                                        <input type={showEditPassword ? "text" : "password"} name="password" minLength={6} value={editForm.password || ''} onChange={handleEditChange} placeholder="Laisser vide si inchangé" className="w-full bg-[#12131f] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#8b5cf6] pr-12" />
+                                        <button type="button" onClick={() => setShowEditPassword(!showEditPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
+                                            {showEditPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>

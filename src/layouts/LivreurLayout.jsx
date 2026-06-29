@@ -87,7 +87,7 @@ const LivreurLayout = () => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 ml-[260px] flex flex-col min-h-screen min-w-0 bg-[#0F1117]">
+            <main className="flex-1 ml-[260px] flex flex-col min-h-screen min-w-0 bg-[#0F1117] relative">
                 {/* Top Header */}
                 <header className="h-[80px] flex items-center justify-between px-8 bg-transparent">
                     <h1 className="font-display text-2xl font-bold text-white tracking-wide">{pageTitle}</h1>
@@ -128,10 +128,10 @@ const LivreurLayout = () => {
                 </header>
 
                 {/* Page Content */}
-                <div className="flex-1 p-8 pt-2 overflow-y-auto relative">
+                <div className="flex-1 p-8 pt-2 pb-32 overflow-y-auto relative">
                     <Outlet />
-                    <LivreurAiChatWidget />
                 </div>
+                <LivreurAiChatWidget />
             </main>
         </div>
     );

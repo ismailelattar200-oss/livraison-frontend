@@ -109,7 +109,7 @@ const AdminLayout = () => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 ml-[260px] flex flex-col min-h-screen min-w-0 bg-[#12131f]">
+            <main className="flex-1 ml-[260px] flex flex-col min-h-screen min-w-0 bg-[#12131f] relative">
                 {/* Top Bar */}
                 <header className="h-[80px] flex items-center justify-between px-8 sticky top-0 z-40 bg-[#12131f]/95 backdrop-blur-md border-b border-white/[0.04]">
                     {/* Page Title */}
@@ -241,10 +241,10 @@ const AdminLayout = () => {
                 </header>
 
                 {/* Page Content */}
-                <div className="flex-1 p-8 min-w-0 relative">
+                <div className="flex-1 p-8 pb-32 min-w-0 relative">
                     <Outlet />
-                    <AdminAiChatWidget />
                 </div>
+                <AdminAiChatWidget />
             </main>
 
             {/* Scoped Custom Scrollbar CSS for sidebar */}

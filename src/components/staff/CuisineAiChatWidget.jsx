@@ -96,7 +96,7 @@ const CuisineAiChatWidget = () => {
             {!isOpen && (
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="fixed bottom-8 right-8 z-50 group flex items-center gap-3 px-5 py-3.5 rounded-full bg-gradient-to-r from-[#6d28d9] via-[#8b5cf6] to-[#a855f7] text-white shadow-[0_8px_30px_rgba(139,92,246,0.6)] hover:shadow-[0_12px_40px_rgba(168,85,247,0.8)] hover:scale-105 active:scale-95 transition-all duration-300 border border-white/20"
+                    className="fixed bottom-6 right-6 z-[100] group flex items-center gap-3 px-5 py-3.5 rounded-full bg-gradient-to-r from-[#6d28d9] via-[#8b5cf6] to-[#a855f7] text-white shadow-[0_8px_30px_rgba(139,92,246,0.6)] hover:shadow-[0_12px_40px_rgba(168,85,247,0.8)] hover:scale-105 active:scale-95 transition-all duration-300 border border-white/20"
                 >
                     <div className="relative flex items-center justify-center">
                         <ChefHat className="w-6 h-6 text-white animate-bounce" />

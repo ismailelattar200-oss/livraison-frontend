@@ -82,8 +82,7 @@ const LivreurAiChatWidget = () => {
         <>
             {/* FLOATING BUTTON (BOTTOM RIGHT) */}
             {!isOpen && (
-                <div className="fixed bottom-8 right-8 z-[100] flex items-center justify-center animate-bounce">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-40 duration-1000"></span>
+                <div className="fixed bottom-6 right-6 z-[100] flex items-center justify-center group">
                     <button
                         onClick={() => setIsOpen(true)}
                         className="relative flex items-center gap-3 px-5 py-3.5 rounded-full bg-gradient-to-r from-[#10b981] to-[#3b82f6] text-[#0f1117] font-extrabold text-sm shadow-[0_10px_30px_rgba(16,185,129,0.5)] transition-all hover:scale-105 active:scale-95 border border-white/20"

@@ -4,13 +4,9 @@ const FloatingChatButton = ({ onClick, isOpen }) => {
     if (isOpen) return null; // Cache le bouton si le tiroir est ouvert
 
     return (
-        <div className="fixed bottom-6 right-6 z-[100] flex items-center justify-center">
+        <div className="fixed bottom-6 right-6 z-[9999] flex items-center justify-center">
             {/* Glowing Luxury Button */}
             <div className="relative flex items-center justify-center">
-                {/* Outer glowing aura */}
-                <span className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-gold via-amber to-gold opacity-40 blur-md animate-pulse"></span>
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold opacity-25 duration-1000"></span>
-                
                 <button
                     onClick={onClick}
                     aria-label="Ouvrir l'assistant MAREA"

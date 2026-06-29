@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import { Search, Filter, Package, CheckCircle2, Truck, Clock } from 'lucide-react';
+import { Search, Filter, Package, CheckCircle2, Truck, Clock, Navigation, MapPin, Radio } from 'lucide-react';
+import { triggerNotification } from '../../components/NotificationToast';
 
 const LivreurCommandes = () => {
     const { user } = useAuth();
@@ -9,6 +10,11 @@ const LivreurCommandes = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'active', 'livre'
+    const prevCountRef = useRef(null);
+
+    // Live GPS sharing state
+    const [sharingGps, setSharingGps] = useState(false);
+    const [coords, setCoords] = useState({ lat: 33.589886, lng: -7.603869 });
 
     const fetchDeliveries = async () => {
         try {
@@ -20,6 +26,13 @@ const LivreurCommandes = () => {
                 ['pret', 'en_cours', 'en_preparation', 'livre', 'en_attente'].includes(o.status)
             );
             
+            // Check for newly assigned deliveries
+            const activeCount = myDeliveries.filter(o => o.status !== 'livre').length;
+            if (prevCountRef.current !== null && activeCount > prevCountRef.current) {
+                triggerNotification("📦 Nouvelle Course Assignée !", "L'administrateur vous a attribué une nouvelle commande à livrer.", "info");
+            }
+            prevCountRef.current = activeCount;
+
             // Sort by descending created_at
             myDeliveries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             
@@ -36,6 +49,18 @@ const LivreurCommandes = () => {
         const interval = setInterval(fetchDeliveries, 15000);
         return () => clearInterval(interval);
     }, [user.id]);
+
+    // Live GPS Transmission loop
+    useEffect(() => {
+        if (!sharingGps) return;
+        const gpsInterval = setInterval(() => {
+            const newLat = coords.lat + (Math.random() - 0.5) * 0.0005;
+            const newLng = coords.lng + (Math.random() - 0.5) * 0.0005;
+            setCoords({ lat: newLat, lng: newLng });
+            api.updateLocation({ current_lat: newLat, current_lng: newLng, is_available: true }).catch(() => {});
+        }, 5000);
+        return () => clearInterval(gpsInterval);
+    }, [sharingGps, coords]);
 
     const updateDeliveryStatus = async (deliveryId, orderId, newStatus) => {
         try {
@@ -132,9 +157,29 @@ const LivreurCommandes = () => {
     return (
         <div className="w-full flex flex-col gap-6 max-w-[1400px] mx-auto">
             {/* Title */}
-            <div className="flex items-center gap-3">
-                <Truck className="w-6 h-6 text-[#a78bfa]" />
-                <h2 className="text-xl font-bold text-white">Mes Commandes</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <Truck className="w-6 h-6 text-[#a78bfa]" />
+                    <h2 className="text-xl font-bold text-white">Mes Commandes</h2>
+                </div>
+                <button
+                    onClick={() => {
+                        setSharingGps(!sharingGps);
+                        triggerNotification(
+                            !sharingGps ? "📍 GPS Activé" : "📍 GPS Désactivé",
+                            !sharingGps ? "Partage de position en direct vers le serveur." : "Partage de position arrêté.",
+                            !sharingGps ? "success" : "warning"
+                        );
+                    }}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg ${
+                        sharingGps 
+                            ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-500/30 animate-pulse' 
+                            : 'bg-[#252A41] hover:bg-[#2E3452] text-gray-300 border border-white/10'
+                    }`}
+                >
+                    <Radio className={`w-4 h-4 ${sharingGps ? 'animate-spin' : ''}`} />
+                    {sharingGps ? 'Partage GPS En Direct (Actif)' : '📍 Partager Ma Position GPS'}
+                </button>
             </div>
 
             {/* Search & Filters Area */}

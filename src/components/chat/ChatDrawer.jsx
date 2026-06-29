@@ -240,7 +240,7 @@ const ChatDrawer = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex justify-end bg-black/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none pointer-events-auto md:pointer-events-none transition-all duration-300">
+        <div className="fixed inset-0 z-[10000] flex justify-end bg-black/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none pointer-events-auto md:pointer-events-none transition-all duration-300">
             {/* Click outside to close on mobile */}
             <div className="absolute inset-0 md:hidden animate-fadeIn" onClick={onClose} />
 

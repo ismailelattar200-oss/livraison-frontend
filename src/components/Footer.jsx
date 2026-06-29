@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Moon, Instagram, Facebook, MapPin, Phone, Clock, MessageCircle } from 'lucide-react';
+import { WhatsAppIcon, handleWhatsAppClick } from './WhatsAppWidget';
+import { getWhatsAppNumber, getDisplayWhatsAppNumber } from '../utils/whatsapp';
 
 const Footer = () => {
     return (
@@ -19,8 +21,8 @@ const Footer = () => {
                             <a href="#" aria-label="Instagram" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-gold hover:text-black-rich transition-colors">
                                 <Instagram className="w-5 h-5" />
                             </a>
-                            <a href="https://wa.me/33612345678" target="_blank" rel="noreferrer" aria-label="WhatsApp" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-gold hover:text-black-rich transition-colors">
-                                <MessageCircle className="w-5 h-5" />
+                            <a href={`https://wa.me/${getWhatsAppNumber()}`} onClick={handleWhatsAppClick} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-[#25D366] hover:text-white transition-colors">
+                                <WhatsAppIcon className="w-5 h-5" />
                             </a>
                             <a href="#" aria-label="X / Twitter" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-gold hover:text-black-rich transition-colors">
                                 {/* X (Twitter) logo */}
@@ -57,6 +59,18 @@ const Footer = () => {
                             <li className="flex items-center gap-3">
                                 <Phone className="w-5 h-5 text-gold shrink-0" />
                                 <span className="text-white/70">+33 1 23 45 67 89</span>
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <a 
+                                    href={`https://wa.me/${getWhatsAppNumber()}`} 
+                                    onClick={handleWhatsAppClick}
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="flex items-center gap-3 text-white/70 hover:text-[#25D366] transition-colors group"
+                                >
+                                    <WhatsAppIcon className="w-5 h-5 text-[#25D366] shrink-0 transition-transform group-hover:scale-110" />
+                                    <span>{getDisplayWhatsAppNumber()}</span>
+                                </a>
                             </li>
                         </ul>
                     </div>

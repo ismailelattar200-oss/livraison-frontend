@@ -163,8 +163,7 @@ const AdminAiChatWidget = () => {
         <>
             {/* FLOATING TRIGGER BUTTON (BOTTOM RIGHT) */}
             {!isOpen && (
-                <div className="fixed bottom-8 right-8 z-[100] flex items-center justify-center animate-bounce">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-purple-500 opacity-40 duration-1000"></span>
+                <div className="fixed bottom-6 right-6 z-[100] flex items-center justify-center group">
                     <button
                         onClick={() => setIsOpen(true)}
                         className="relative flex items-center gap-3 px-6 py-3.5 rounded-full bg-gradient-to-r from-[#7c3aed] via-[#6d28d9] to-[#4f46e5] text-white font-extrabold text-sm shadow-[0_10px_35px_rgba(124,58,237,0.6)] transition-all hover:scale-105 active:scale-95 border border-white/25"

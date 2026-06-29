@@ -61,8 +61,10 @@ api.deleteAvatar = () => apiInstance.delete('/user/avatar');
 
 api.getUserOrders = () => apiInstance.get('/user/orders');
 api.updateProfile = (data) => apiInstance.put('/user/profile', data);
+api.updateLocation = (data) => apiInstance.put('/user/location', data);
 api.updatePassword = (data) => apiInstance.put('/user/password', data);
 api.deleteAccount = () => apiInstance.delete('/user');
+api.submitFeedback = (data) => apiInstance.post('/feedbacks', data);
 
 // ── Admin ─────────────────────────────────────────────────────
 api.getAdminStats = () => apiInstance.get('/admin/stats');

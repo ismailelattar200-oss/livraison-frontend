@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import {
-    Truck, MapPin, Phone, Clock, Package, CheckCircle, RefreshCw, ChevronDown, Check
+    Truck, MapPin, Phone, Clock, Package, CheckCircle, RefreshCw, ChevronDown, Check, Navigation, ChefHat, X
 } from 'lucide-react';
+import { triggerNotification } from '../../components/NotificationToast';
+import { getWhatsAppNumber } from '../../utils/whatsapp';
 
 // ── Status Configuration ──────────────────────────────────────────
 const DELIVERY_STATUS = {
@@ -123,10 +125,12 @@ const AdminRepartos = () => {
     const [loading, setLoading] = useState(true);
     const [assigningId, setAssigningId] = useState(null);
     const [updatingStatusId, setUpdatingStatusId] = useState(null);
+    const [selectedGpsOrder, setSelectedGpsOrder] = useState(null);
     
     // Auto-refresh logic
     const [refreshCountdown, setRefreshCountdown] = useState(15);
     const countdownRef = useRef(null);
+    const prevReadyCountRef = useRef(null);
 
     // Fetch Data
     const fetchData = useCallback(async (showLoading = false) => {
@@ -139,6 +143,12 @@ const AdminRepartos = () => {
             
             const formattedOrders = ordersRes.data.data || [];
             
+            const currentReady = formattedOrders.filter(o => o.status === 'pret').length;
+            if (prevReadyCountRef.current !== null && currentReady > prevReadyCountRef.current) {
+                triggerNotification("🍳 Commande Prête !", "Le Chef a terminé la préparation d'une commande à livrer.", "success");
+            }
+            prevReadyCountRef.current = currentReady;
+
             setOrders(formattedOrders);
             setDeliveryPersons(dpRes.data.data || []);
             
@@ -174,10 +184,46 @@ const AdminRepartos = () => {
 
     // Actions
     const handleAssignLivreur = async (orderId, livreurId) => {
+        if (!livreurId) return;
         setAssigningId(orderId);
         try {
             await api.put(`/admin/deliveries/${orderId}/assign`, { delivery_person_id: livreurId });
             await fetchData(false);
+
+            const livreur = deliveryPersons.find(dp => String(dp.id) === String(livreurId));
+            const assignedOrder = orders.find(o => String(o.id) === String(orderId));
+
+            if (assignedOrder) {
+                const itemsList = assignedOrder.order_items && assignedOrder.order_items.length > 0
+                    ? assignedOrder.order_items.map(i => `${i.quantity}x ${i.menu_item?.name || i.name}`).join(', ')
+                    : assignedOrder.items && assignedOrder.items.length > 0
+                        ? assignedOrder.items.map(i => `${i.quantity}x ${i.name}`).join(', ')
+                        : 'Voir sur le dashboard';
+                const address = assignedOrder.customer_address || 'Adresse spécifiée par le client';
+                const clientName = assignedOrder.customer_name || 'Client';
+                const clientPhone = assignedOrder.customer_phone || '';
+
+                const message = encodeURIComponent(
+                    `👑 *DIRECTION & ADMINISTRATION MAREA*\n` +
+                    `📢 *ASSIGNATION OFFICIELLE DE COURSE*\n\n` +
+                    `Bonjour ${livreur?.name || 'Livreur'},\n` +
+                    `L'administration vous a assigné une nouvelle livraison prioritaire :\n\n` +
+                    `📦 *Commande :* #${assignedOrder.order_number}\n` +
+                    `📍 *Adresse de livraison :* ${address}\n` +
+                    `👤 *Client :* ${clientName} ${clientPhone ? `(${clientPhone})` : ''}\n` +
+                    `💰 *Total à encaisser :* ${Number(assignedOrder.total || 0).toFixed(2)} MAD\n` +
+                    `🍔 *Détails :* ${itemsList}\n\n` +
+                    `👉 Connectez-vous immédiatement sur votre *Dashboard Livreur* MAREA pour confirmer la prise en charge et activer le suivi GPS en direct !`
+                );
+
+                let targetPhone = livreur?.phone ? String(livreur.phone).replace(/\D/g, '') : '';
+                if (targetPhone.startsWith('0')) targetPhone = '212' + targetPhone.substring(1);
+                else if (!targetPhone.startsWith('212') && targetPhone.length === 9) targetPhone = '212' + targetPhone;
+                if (!targetPhone) targetPhone = getWhatsAppNumber();
+
+                window.open(`https://wa.me/${targetPhone}?text=${message}`, '_blank');
+                triggerNotification("📲 Livreur Notifié", `Course assignée sur Dashboard et envoyée par WhatsApp au numéro ${targetPhone}.`, "success");
+            }
         } catch (error) {
             console.error("Erreur assignation:", error);
             alert("Erreur lors de l'assignation.");
@@ -187,11 +233,18 @@ const AdminRepartos = () => {
     };
 
     const handleUpdateStatus = async (orderId, deliveryId, newStatus) => {
+        const shouldSendWa = (newStatus === 'livre');
+        const win = shouldSendWa ? window.open('about:blank', '_blank') : null;
         setUpdatingStatusId(orderId);
         try {
             await api.put(`/admin/deliveries/${deliveryId}`, { status: newStatus });
             await fetchData(false);
+            if (win && shouldSendWa) {
+                const message = encodeURIComponent(`📦 Notification MAREA : La commande #${orderId} a été marquée comme LIVRÉE ✅.`);
+                win.location.href = `https://wa.me/${getWhatsAppNumber()}?text=${message}`;
+            }
         } catch (error) {
+            if (win) win.close();
             console.error("Erreur mise à jour statut:", error);
             alert("Erreur lors de la mise à jour.");
         } finally {
@@ -431,6 +484,12 @@ const AdminRepartos = () => {
                                             <span className="text-[13px] font-bold text-[#94a3b8] flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {elapsed} min</span>
                                         </td>
                                         <td className="px-3 py-4 text-right whitespace-nowrap">
+                                            <button 
+                                                onClick={() => setSelectedGpsOrder(order)}
+                                                className="bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500 hover:text-white px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all shadow-md mr-2 inline-flex items-center gap-1.5"
+                                            >
+                                                <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span> 🗺️ Suivi GPS
+                                            </button>
                                             {order.delivery?.status === 'en_cours' && (
                                                 <button 
                                                     onClick={() => handleUpdateStatus(order.id, order.delivery?.id, 'en_preparation')}
@@ -457,6 +516,87 @@ const AdminRepartos = () => {
                         </table>
                     </div>
             </div>
+
+            {/* MODALE SUIVI GPS EN DIRECT POUR L'ADMIN */}
+            {selectedGpsOrder && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+                    <div className="bg-[#1e1f2e] border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl">
+                        <div className="p-6 bg-[#12131f] border-b border-white/10 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Radar
+                                </span>
+                                <h3 className="text-xl font-bold font-display text-white">Suivi Livreur - Commande {selectedGpsOrder.order_number}</h3>
+                            </div>
+                            <button onClick={() => setSelectedGpsOrder(null)} className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                            <div className="grid grid-cols-2 gap-4 bg-[#12131f] p-4 rounded-xl border border-white/5">
+                                <div>
+                                    <span className="text-xs text-gray-400 block uppercase">Client & Adresse</span>
+                                    <span className="text-sm font-bold text-white block mt-0.5">{selectedGpsOrder.customer_name}</span>
+                                    <span className="text-xs text-gray-300 block">{selectedGpsOrder.customer_address || 'Adresse non spécifiée'}</span>
+                                </div>
+                                <div>
+                                    <span className="text-xs text-gray-400 block uppercase">Livreur Assigné</span>
+                                    <span className="text-sm font-bold text-[#8b5cf6] block mt-0.5">{selectedGpsOrder.assigned_driver?.name || 'Inconnu'}</span>
+                                    <span className="font-mono text-xs text-amber-400 block mt-0.5">
+                                        GPS: {(selectedGpsOrder.assigned_driver?.current_lat ? parseFloat(selectedGpsOrder.assigned_driver.current_lat).toFixed(5) : '33.58988')}° N, {(selectedGpsOrder.assigned_driver?.current_lng ? parseFloat(selectedGpsOrder.assigned_driver.current_lng).toFixed(5) : '-7.60386')}° W
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Interactive Visual Radar / Map Box */}
+                            <div className="relative h-72 w-full bg-[#090D16] rounded-xl border border-white/15 overflow-hidden flex items-center justify-center shadow-inner">
+                                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                                <div className="absolute w-56 h-56 rounded-full border border-[#8b5cf6]/20 animate-ping duration-1000"></div>
+                                <div className="absolute w-80 h-80 rounded-full border border-[#8b5cf6]/10"></div>
+                                
+                                {/* Restaurant */}
+                                <div className="absolute left-1/4 top-1/3 flex flex-col items-center">
+                                    <div className="w-9 h-9 rounded-full bg-[#1e1f2e] border-2 border-[#8b5cf6] flex items-center justify-center shadow-lg">
+                                        <ChefHat className="w-5 h-5 text-[#8b5cf6]" />
+                                    </div>
+                                    <span className="text-[11px] text-gray-400 mt-1 font-semibold">Restaurant</span>
+                                </div>
+
+                                {/* Moving Driver Marker */}
+                                <div 
+                                    className="absolute flex flex-col items-center transition-all duration-1000 ease-linear z-20"
+                                    style={{
+                                        left: `${Math.min(80, Math.max(20, (((selectedGpsOrder.assigned_driver?.current_lng ? parseFloat(selectedGpsOrder.assigned_driver.current_lng) : -7.6038) + 7.61) * 1500) + 50))}%`,
+                                        top: `${Math.min(80, Math.max(20, (((selectedGpsOrder.assigned_driver?.current_lat ? parseFloat(selectedGpsOrder.assigned_driver.current_lat) : 33.5898) - 33.58) * 1500) + 50))}%`
+                                    }}
+                                >
+                                    <div className="w-11 h-11 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.8)] border-2 border-white animate-bounce">
+                                        <Navigation className="w-6 h-6 rotate-45" />
+                                    </div>
+                                    <span className="bg-[#0B0F19] text-emerald-400 text-[11px] font-bold px-2.5 py-0.5 rounded-md border border-emerald-500/30 mt-1 shadow">
+                                        {selectedGpsOrder.assigned_driver?.name || 'Livreur'} 🛵
+                                    </span>
+                                </div>
+
+                                {/* Customer Destination */}
+                                <div className="absolute right-1/4 bottom-1/3 flex flex-col items-center">
+                                    <div className="w-9 h-9 rounded-full bg-amber-500 text-navy-deep flex items-center justify-center shadow-lg animate-pulse">
+                                        <MapPin className="w-5 h-5" />
+                                    </div>
+                                    <span className="text-[11px] text-amber-400 mt-1 font-bold">Client</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-[#12131f] border-t border-white/10 flex justify-end">
+                            <button onClick={() => setSelectedGpsOrder(null)} className="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors">
+                                Fermer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
         </div>
     );

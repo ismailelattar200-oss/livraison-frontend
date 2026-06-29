@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import { Eye, CheckCircle2, XCircle, Clock, Truck, User, ChevronDown } from 'lucide-react';
+import { triggerNotification } from '../../components/NotificationToast';
+import { getWhatsAppNumber } from '../../utils/whatsapp';
 
 const AdminPedidos = () => {
     const [orders, setOrders] = useState([]);
@@ -8,6 +10,7 @@ const AdminPedidos = () => {
     const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState('all');
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const prevReadyCountRef = useRef(null);
 
     const fetchOrders = async () => {
         try {
@@ -15,7 +18,15 @@ const AdminPedidos = () => {
                 api.get('/admin/orders'),
                 api.get('/users')
             ]);
-            setOrders(ordersRes.data.data || []);
+            const newOrders = ordersRes.data.data || [];
+            
+            const currentReady = newOrders.filter(o => o.status === 'pret').length;
+            if (prevReadyCountRef.current !== null && currentReady > prevReadyCountRef.current) {
+                triggerNotification("🍳 Commande Prête !", "Le Chef a terminé la préparation d'une commande. Prête pour expédition !", "success");
+            }
+            prevReadyCountRef.current = currentReady;
+
+            setOrders(newOrders);
             const deliveryDrivers = (usersRes.data || []).filter(u => u.role === 'delivery');
             setDrivers(deliveryDrivers);
         } catch (error) {
@@ -25,16 +36,27 @@ const AdminPedidos = () => {
         }
     };
 
-    useEffect(() => { fetchOrders(); }, []);
+    useEffect(() => { 
+        fetchOrders();
+        const interval = setInterval(fetchOrders, 15000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleStatusChange = async (orderId, newStatus) => {
+        const shouldSendWa = (newStatus === 'livre');
+        const win = shouldSendWa ? window.open('about:blank', '_blank') : null;
         try {
             await api.put(`/admin/orders/${orderId}`, { status: newStatus });
             fetchOrders();
             if (selectedOrder && selectedOrder.id === orderId) {
                 setSelectedOrder(prev => ({ ...prev, status: newStatus }));
             }
+            if (win && shouldSendWa) {
+                const message = encodeURIComponent(`📦 Notification MAREA : La commande #${orderId} a été marquée comme LIVRÉE ✅.`);
+                win.location.href = `https://wa.me/${getWhatsAppNumber()}?text=${message}`;
+            }
         } catch (err) {
+            if (win) win.close();
             console.error("Erreur mise à jour statut:", err);
             alert("Erreur lors de la mise à jour du statut");
         }
@@ -45,9 +67,44 @@ const AdminPedidos = () => {
         try {
             await api.post('/admin/deliveries', { order_id: orderId, delivery_person_id: driverId });
             fetchOrders();
+            let updatedOrder = selectedOrder;
             if (selectedOrder && selectedOrder.id === orderId) {
                 const res = await api.get(`/admin/orders/${selectedOrder.order_number}`);
                 setSelectedOrder(res.data.data);
+                updatedOrder = res.data.data;
+            } else {
+                updatedOrder = orders.find(o => String(o.id) === String(orderId));
+            }
+
+            const driver = drivers.find(d => String(d.id) === String(driverId));
+            if (updatedOrder) {
+                const itemsList = updatedOrder.items && updatedOrder.items.length > 0
+                    ? updatedOrder.items.map(i => `${i.quantity}x ${i.name}`).join(', ')
+                    : 'Voir sur le dashboard';
+                const address = updatedOrder.customer_address || 'Adresse spécifiée par le client';
+                const clientName = updatedOrder.customer_name || 'Client';
+                const clientPhone = updatedOrder.customer_phone || '';
+
+                const message = encodeURIComponent(
+                    `👑 *DIRECTION & ADMINISTRATION MAREA*\n` +
+                    `📢 *ASSIGNATION OFFICIELLE DE COURSE*\n\n` +
+                    `Bonjour ${driver?.name || 'Livreur'},\n` +
+                    `L'administration vous a assigné une nouvelle livraison prioritaire :\n\n` +
+                    `📦 *Commande :* #${updatedOrder.order_number}\n` +
+                    `📍 *Adresse de livraison :* ${address}\n` +
+                    `👤 *Client :* ${clientName} ${clientPhone ? `(${clientPhone})` : ''}\n` +
+                    `💰 *Total à encaisser :* ${Number(updatedOrder.total || 0).toFixed(2)} MAD\n` +
+                    `🍔 *Détails :* ${itemsList}\n\n` +
+                    `👉 Connectez-vous immédiatement sur votre *Dashboard Livreur* MAREA pour confirmer la prise en charge et activer le suivi GPS en direct !`
+                );
+
+                let targetPhone = driver?.phone ? String(driver.phone).replace(/\D/g, '') : '';
+                if (targetPhone.startsWith('0')) targetPhone = '212' + targetPhone.substring(1);
+                else if (!targetPhone.startsWith('212') && targetPhone.length === 9) targetPhone = '212' + targetPhone;
+                if (!targetPhone) targetPhone = getWhatsAppNumber();
+
+                window.open(`https://wa.me/${targetPhone}?text=${message}`, '_blank');
+                triggerNotification("📲 Livreur Notifié", `Course assignée sur Dashboard et envoyée par WhatsApp au numéro ${targetPhone}.`, "success");
             }
         } catch (err) {
             console.error("Erreur assignation livreur:", err);

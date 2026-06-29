@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { User, Shield, Palette, Store, Bell, Save, Settings as SettingsIcon, Lock, Moon, Sun, Check, Eye, EyeOff } from 'lucide-react';
+import { User, Shield, Palette, Store, Bell, Save, Settings as SettingsIcon, Lock, Moon, Sun, Check, Eye, EyeOff, MessageCircle, Phone } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import AvatarUpload from '../../components/AvatarUpload';
+import { saveWhatsAppNumber, getDisplayWhatsAppNumber, getWhatsAppMessage, isWhatsAppEnabled, saveWhatsAppConfig } from '../../utils/whatsapp';
 
 const Settings = () => {
     const { user, setUser } = useAuth();
@@ -82,9 +83,26 @@ const Settings = () => {
         }, 1000);
     };
 
+    const [whatsappForm, setWhatsappForm] = useState({
+        phone: getDisplayWhatsAppNumber(),
+        defaultMessage: getWhatsAppMessage(),
+        enabled: isWhatsAppEnabled()
+    });
+
+    const handleWhatsappSave = (e) => {
+        e.preventDefault();
+        saveWhatsAppConfig(whatsappForm.phone, whatsappForm.defaultMessage, whatsappForm.enabled);
+        setIsSaving(true);
+        setTimeout(() => {
+            setIsSaving(false);
+            alert("Configuration WhatsApp mise à jour avec succès !");
+        }, 800);
+    };
+
     const tabs = [
         { id: 'profil', label: 'Profil Admin', icon: User },
         { id: 'securite', label: 'Sécurité', icon: Shield },
+        { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle },
         { id: 'apparence', label: 'Apparence', icon: Palette },
         { id: 'boutique', label: 'Boutique', icon: Store },
         { id: 'notifications', label: 'Notifications', icon: Bell }
@@ -256,6 +274,72 @@ const Settings = () => {
                                 <button type="submit" disabled={isUpdatingPassword} className="bg-[#8b5cf6] text-white font-bold text-[13px] px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-[#7c3aed] transition-all shadow-[0_4px_20px_-4px_rgba(139,92,246,0.5)] w-max disabled:opacity-50">
                                     <Shield className="w-4 h-4" />
                                     {isUpdatingPassword ? "Mise à jour..." : "Mettre à jour"}
+                                </button>
+                            </form>
+                        </div>
+                    )}
+
+                    {activeTab === 'whatsapp' && (
+                        <div className="p-10 animate-fadeIn">
+                            <div className="flex items-center gap-4 border-b border-white/[0.05] pb-8 mb-10">
+                                <MessageCircle className="w-6 h-6 text-[#25D366]" />
+                                <div>
+                                    <h2 className="text-xl font-bold text-white">Configuration WhatsApp</h2>
+                                    <p className="text-xs text-[#94a3b8] mt-1">Gérez le numéro WhatsApp de contact pour les clients et livreurs</p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleWhatsappSave} className="space-y-8 max-w-xl">
+                                <div className="bg-[#12131f] p-6 rounded-2xl border border-white/5 space-y-6">
+                                    {/* Toggle Activer / Désactiver */}
+                                    <div className="flex items-center justify-between pb-6 border-b border-white/10">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-white">Bouton WhatsApp flottant</h4>
+                                            <p className="text-xs text-[#64748b] mt-0.5">Activer ou désactiver le widget sur le site public</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setWhatsappForm({ ...whatsappForm, enabled: !whatsappForm.enabled })}
+                                            className={`w-12 h-6 rounded-full transition-colors relative p-1 ${whatsappForm.enabled ? 'bg-[#25D366]' : 'bg-gray-700'}`}
+                                        >
+                                            <div className={`w-4 h-4 rounded-full bg-white transition-transform ${whatsappForm.enabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        </button>
+                                    </div>
+
+                                    {/* Numéro */}
+                                    <div>
+                                        <label className="block text-[12px] font-bold text-[#e2e8f0] mb-2">Numéro de téléphone WhatsApp</label>
+                                        <div className="relative">
+                                            <Phone className="w-4 h-4 text-[#25D366] absolute left-4 top-1/2 -translate-y-1/2" />
+                                            <input 
+                                                type="text" 
+                                                value={whatsappForm.phone}
+                                                onChange={(e) => setWhatsappForm({ ...whatsappForm, phone: e.target.value })}
+                                                placeholder="0615479703" 
+                                                required
+                                                className="w-full bg-[#1e1f2e] border border-white/[0.08] rounded-xl pl-12 pr-4 py-3 text-white text-sm font-mono focus:outline-none focus:border-[#25D366] transition-colors shadow-inner" 
+                                            />
+                                        </div>
+                                        <p className="text-[11px] text-[#64748b] mt-2">Format conseillé : 0615479703 ou +212615479703</p>
+                                    </div>
+
+                                    {/* Message par défaut */}
+                                    <div>
+                                        <label className="block text-[12px] font-bold text-[#e2e8f0] mb-2">Message par défaut (Pré-rempli)</label>
+                                        <textarea 
+                                            rows="3"
+                                            value={whatsappForm.defaultMessage}
+                                            onChange={(e) => setWhatsappForm({ ...whatsappForm, defaultMessage: e.target.value })}
+                                            placeholder="Bonjour MAREA ! Je souhaite passer une commande."
+                                            className="w-full bg-[#1e1f2e] border border-white/[0.08] rounded-xl p-4 text-white text-sm focus:outline-none focus:border-[#25D366] transition-colors shadow-inner resize-none"
+                                        />
+                                        <p className="text-[11px] text-[#64748b] mt-2">Texte qui apparaîtra automatiquement lorsque le client lancera la discussion.</p>
+                                    </div>
+                                </div>
+
+                                <button type="submit" disabled={isSaving} className="bg-[#25D366] hover:bg-[#22bf5b] text-white font-bold text-[13px] px-6 py-3.5 rounded-xl flex items-center gap-2 transition-all shadow-[0_4px_20px_-4px_rgba(37,211,102,0.5)] disabled:opacity-50">
+                                    <Save className="w-4 h-4" />
+                                    {isSaving ? "Enregistrement..." : "Enregistrer la configuration"}
                                 </button>
                             </form>
                         </div>

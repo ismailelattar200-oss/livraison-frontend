@@ -4,6 +4,7 @@ import {
     MapPin, Phone, Mail, Clock, Send, Facebook, Instagram, Twitter, 
     MessageSquare, User, ChevronDown, ChevronUp, PenLine, Tag, ArrowRight 
 } from 'lucide-react';
+import { getWhatsAppNumber } from '../../utils/whatsapp';
 
 const WhatsAppIcon = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" className={className}>
@@ -240,10 +241,21 @@ const Contacto = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* WhatsApp Direct Action Button */}
+                            <a 
+                                href={`https://wa.me/${getWhatsAppNumber()}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="mt-8 w-full py-3.5 px-6 rounded-xl bg-[#25D366] text-white font-bold text-base flex items-center justify-center gap-3 hover:bg-[#20bd5a] hover:shadow-lg transition-all shadow-md"
+                            >
+                                <WhatsAppIcon className="w-5 h-5" />
+                                Contacter le restaurant sur WhatsApp
+                            </a>
                         </div>
 
                         {/* Social Links */}
-                        <div className="mt-10 pt-8 border-t border-gray-100">
+                        <div className="mt-8 pt-6 border-t border-gray-100">
                             <h4 className="font-bold text-navy-deep text-sm uppercase tracking-wider mb-4">Suivez-nous</h4>
                             <div className="flex gap-3">
                                 <a href="#" className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:opacity-90 transition-opacity">

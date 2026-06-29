@@ -228,7 +228,7 @@ const Carta = () => {
             {cartCount > 0 && (
                 <button 
                     onClick={() => setIsCartOpen(true)}
-                    className="fixed bottom-6 right-6 z-40 bg-gold text-black-rich rounded-full p-4 shadow-2xl flex items-center gap-3 hover:scale-105 transition-transform group cursor-pointer"
+                    className="fixed bottom-[88px] right-6 z-40 bg-gold text-black-rich rounded-full p-4 shadow-2xl flex items-center gap-3 hover:scale-105 transition-transform group cursor-pointer border border-white/20"
                 >
                     <div className="relative">
                         <ShoppingCart className="w-6 h-6" />

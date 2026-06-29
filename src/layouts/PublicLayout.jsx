@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CartDrawer from '../components/CartDrawer';
 import AIAssistantWidget from '../components/AIAssistantWidget';
+import WhatsAppWidget from '../components/WhatsAppWidget';
 
 const PublicLayout = () => {
     return (
@@ -14,6 +15,7 @@ const PublicLayout = () => {
             </main>
             <Footer />
             <AIAssistantWidget />
+            <WhatsAppWidget />
         </div>
     );
 };
