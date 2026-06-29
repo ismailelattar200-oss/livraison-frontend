@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
-import { Eye, CheckCircle2, XCircle, Clock, Truck, User, ChevronDown } from 'lucide-react';
+import { Eye, CheckCircle2, XCircle, Clock, Truck, User, ChevronDown, MessageCircle, CheckCircle, Check } from 'lucide-react';
 import { triggerNotification } from '../../components/NotificationToast';
 import { getWhatsAppNumber } from '../../utils/whatsapp';
 
@@ -10,6 +10,7 @@ const AdminPedidos = () => {
     const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState('all');
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [assignedModalData, setAssignedModalData] = useState(null);
     const prevReadyCountRef = useRef(null);
 
     const fetchOrders = async () => {
@@ -103,8 +104,13 @@ const AdminPedidos = () => {
                 else if (!targetPhone.startsWith('212') && targetPhone.length === 9) targetPhone = '212' + targetPhone;
                 if (!targetPhone) targetPhone = getWhatsAppNumber();
 
-                window.open(`https://wa.me/${targetPhone}?text=${message}`, '_blank');
-                triggerNotification("📲 Livreur Notifié", `Course assignée sur Dashboard et envoyée par WhatsApp au numéro ${targetPhone}.`, "success");
+                setAssignedModalData({
+                    driverName: driver?.name || 'Livreur',
+                    targetPhone,
+                    message,
+                    orderNumber: updatedOrder.order_number
+                });
+                triggerNotification("✅ Course Assignée !", `Commande #${updatedOrder.order_number} transmise au dashboard de ${driver?.name || 'Livreur'}.`, "success");
             }
         } catch (err) {
             console.error("Erreur assignation livreur:", err);
@@ -324,6 +330,47 @@ const AdminPedidos = () => {
                         <div className="p-5 bg-[#1e1f2e] border-t border-white/[0.05] flex justify-end">
                             <button onClick={() => setSelectedOrder(null)} className="px-6 py-2.5 border border-white/[0.05] rounded-xl bg-[#12131f] text-[#94a3b8] hover:bg-white/5 hover:text-white font-bold transition-colors text-[13px]">
                                 Fermer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ASSIGNMENT CONFIRMATION & WHATSAPP MODAL */}
+            {assignedModalData && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+                    <div className="bg-[#1e1f2e] rounded-2xl max-w-md w-full border border-white/10 p-6 shadow-2xl text-center space-y-6">
+                        <div className="w-16 h-16 bg-[#25D366]/20 rounded-full flex items-center justify-center mx-auto border border-[#25D366]/40 shadow-[0_0_30px_rgba(37,211,102,0.3)]">
+                            <CheckCircle className="w-10 h-10 text-[#25D366]" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-bold text-white mb-1">Commande Assignée !</h3>
+                            <p className="text-sm text-gray-300">
+                                La commande <span className="text-[#8b5cf6] font-bold">#{assignedModalData.orderNumber}</span> a été transmise instantanément au dashboard de <span className="text-white font-bold">{assignedModalData.driverName}</span>.
+                            </p>
+                        </div>
+                        <div className="p-4 bg-[#12131f] rounded-xl border border-white/5 text-left text-xs text-gray-400 space-y-1">
+                            <p className="font-semibold text-emerald-400 flex items-center gap-1.5">
+                                <Check className="w-4 h-4" /> Enregistré en base de données
+                            </p>
+                            <p>Le livreur peut déjà voir et accepter la course sur son interface.</p>
+                        </div>
+                        <div className="flex flex-col gap-3 pt-2">
+                            <a
+                                href={`https://wa.me/${assignedModalData.targetPhone}?text=${assignedModalData.message}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => setAssignedModalData(null)}
+                                className="w-full py-3.5 px-4 bg-[#25D366] hover:bg-[#22bf5b] text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_4px_20px_-4px_rgba(37,211,102,0.5)] text-sm"
+                            >
+                                <MessageCircle className="w-5 h-5 fill-white" />
+                                Contacter {assignedModalData.driverName} sur WhatsApp
+                            </a>
+                            <button
+                                onClick={() => setAssignedModalData(null)}
+                                className="w-full py-2.5 px-4 bg-white/5 hover:bg-white/10 text-gray-300 font-semibold rounded-xl transition-colors text-sm"
+                            >
+                                Fermer (Déjà assignée)
                             </button>
                         </div>
                     </div>
