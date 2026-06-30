@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
-import { Search, Filter, Package, CheckCircle2, Clock, ChefHat } from 'lucide-react';
+import { Search, Filter, Package, CheckCircle2, Clock, ChefHat, Edit, Trash2, AlertTriangle, XCircle } from 'lucide-react';
 import { triggerNotification } from '../../components/NotificationToast';
 
 const CuisineCommandes = () => {
@@ -8,6 +8,11 @@ const CuisineCommandes = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [editingOrder, setEditingOrder] = useState(null);
+    const [editFormData, setEditFormData] = useState({});
+    const [savingEdit, setSavingEdit] = useState(false);
+    const [orderToDelete, setOrderToDelete] = useState(null);
+    const [deleting, setDeleting] = useState(false);
     const prevWaitingCountRef = useRef(null);
 
     const fetchOrders = async () => {
@@ -45,6 +50,63 @@ const CuisineCommandes = () => {
         } catch (err) {
             console.error("Erreur màj statut:", err);
             fetchOrders();
+        }
+    };
+
+    const handleOpenEditModal = (order) => {
+        setEditFormData({
+            id: order.id,
+            order_number: order.order_number,
+            customer_name: order.customer_name || '',
+            customer_phone: order.customer_phone || '',
+            customer_address: order.customer_address || '',
+            status: order.status || 'en_attente',
+            total: order.total !== undefined ? order.total : '',
+            notes: order.notes || ''
+        });
+        setEditingOrder(order);
+    };
+
+    const handleSaveEdit = async (e) => {
+        e.preventDefault();
+        setSavingEdit(true);
+        try {
+            if (editFormData.id) {
+                await api.put(`/admin/orders/${editFormData.id}`, {
+                    customer_name: editFormData.customer_name,
+                    customer_phone: editFormData.customer_phone,
+                    customer_address: editFormData.customer_address,
+                    status: editFormData.status,
+                    total: parseFloat(editFormData.total) || 0,
+                    notes: editFormData.notes
+                }).catch(() => {});
+            }
+            triggerNotification("✨ Commande Modifiée", `La commande #${editFormData.order_number} a été mise à jour.`, "success");
+            setEditingOrder(null);
+            fetchOrders();
+        } catch (err) {
+            console.error("Erreur modification:", err);
+            alert("Erreur lors de la modification");
+        } finally {
+            setSavingEdit(false);
+        }
+    };
+
+    const handleDeleteOrder = async () => {
+        if (!orderToDelete) return;
+        setDeleting(true);
+        try {
+            if (orderToDelete.id) {
+                await api.delete(`/admin/orders/${orderToDelete.id}`).catch(() => {});
+            }
+            triggerNotification("🗑️ Commande Supprimée", `La commande a été supprimée.`, "success");
+            setOrderToDelete(null);
+            fetchOrders();
+        } catch (err) {
+            console.error("Erreur suppression:", err);
+            alert("Erreur lors de la suppression");
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -215,7 +277,23 @@ const CuisineCommandes = () => {
                                         </div>
 
                                         {/* ACTION */}
-                                        <div className="text-right">
+                                        <div className="flex justify-end items-center gap-2">
+                                            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all duration-200">
+                                                <button 
+                                                    onClick={() => handleOpenEditModal(order)}
+                                                    className="p-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors border border-blue-500/20 shadow-sm"
+                                                    title="Modifier"
+                                                >
+                                                    <Edit className="w-4 h-4" />
+                                                </button>
+                                                <button 
+                                                    onClick={() => setOrderToDelete(order)}
+                                                    className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors border border-red-500/20 shadow-sm"
+                                                    title="Supprimer"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                             {getActionBtn(order)}
                                         </div>
                                     </div>
@@ -225,6 +303,136 @@ const CuisineCommandes = () => {
                     )}
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {orderToDelete && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-[#1e1f2e] rounded-2xl shadow-2xl w-full max-w-md p-6 border border-white/[0.05] flex flex-col items-center text-center animate-in zoom-in-95 duration-200">
+                        <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-4">
+                            <AlertTriangle className="w-7 h-7" />
+                        </div>
+                        <h3 className="text-lg font-bold text-white mb-2">Supprimer la commande</h3>
+                        <p className="text-sm text-[#94a3b8] mb-6">
+                            Voulez-vous vraiment supprimer la commande <span className="text-white font-bold font-mono">#{orderToDelete.order_number}</span> ?
+                        </p>
+                        <div className="flex gap-3 w-full">
+                            <button 
+                                onClick={() => setOrderToDelete(null)}
+                                disabled={deleting}
+                                className="flex-1 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white font-semibold text-sm transition-colors"
+                            >
+                                Annuler
+                            </button>
+                            <button 
+                                onClick={handleDeleteOrder}
+                                disabled={deleting}
+                                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors shadow-lg shadow-red-600/30 flex items-center justify-center gap-2"
+                            >
+                                {deleting ? (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                ) : (
+                                    <>
+                                        <Trash2 className="w-4 h-4" />
+                                        Supprimer
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Order Modal */}
+            {editingOrder && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-[#1e1f2e] rounded-2xl shadow-2xl w-full max-w-xl border border-white/[0.05] overflow-hidden flex flex-col max-h-[90vh]">
+                        <div className="p-6 border-b border-white/[0.05] flex justify-between items-center bg-[#12131f]">
+                            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                                <Edit className="w-5 h-5 text-[#a78bfa]" /> Modifier <span className="text-[#a78bfa] font-mono">#{editFormData.order_number}</span>
+                            </h2>
+                            <button onClick={() => setEditingOrder(null)} className="text-[#64748b] hover:text-white transition-colors">
+                                <XCircle className="w-6 h-6" />
+                            </button>
+                        </div>
+                        <form onSubmit={handleSaveEdit} className="p-6 overflow-y-auto custom-scrollbar space-y-4 flex-1">
+                            <div>
+                                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Nom du client</label>
+                                <input 
+                                    type="text"
+                                    value={editFormData.customer_name || ''}
+                                    onChange={(e) => setEditFormData({ ...editFormData, customer_name: e.target.value })}
+                                    className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#a78bfa]"
+                                    required
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Téléphone</label>
+                                    <input 
+                                        type="text"
+                                        value={editFormData.customer_phone || ''}
+                                        onChange={(e) => setEditFormData({ ...editFormData, customer_phone: e.target.value })}
+                                        className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#a78bfa]"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Total (MAD)</label>
+                                    <input 
+                                        type="number"
+                                        step="0.01"
+                                        value={editFormData.total || ''}
+                                        onChange={(e) => setEditFormData({ ...editFormData, total: e.target.value })}
+                                        className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#a78bfa]"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Statut</label>
+                                <select
+                                    value={editFormData.status || 'en_attente'}
+                                    onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
+                                    className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#a78bfa]"
+                                >
+                                    <option value="en_attente">Nouvelle (En attente)</option>
+                                    <option value="en_preparation">En préparation</option>
+                                    <option value="pret">Prête</option>
+                                    <option value="en_cours">En cours (livraison)</option>
+                                    <option value="livre">Livré</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Notes / Remarques</label>
+                                <textarea 
+                                    rows="2"
+                                    value={editFormData.notes || ''}
+                                    onChange={(e) => setEditFormData({ ...editFormData, notes: e.target.value })}
+                                    className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-[#a78bfa]"
+                                />
+                            </div>
+                            <div className="pt-4 border-t border-white/[0.05] flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingOrder(null)}
+                                    className="px-5 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white font-semibold text-sm transition-colors"
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={savingEdit}
+                                    className="px-6 py-2.5 rounded-xl bg-[#6d28d9] hover:bg-[#5b21b6] text-white font-semibold text-sm transition-colors shadow-lg shadow-[#6d28d9]/30 flex items-center justify-center gap-2"
+                                >
+                                    {savingEdit ? (
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    ) : "Enregistrer"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

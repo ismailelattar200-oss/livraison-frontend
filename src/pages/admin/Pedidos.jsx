@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
-import { Eye, CheckCircle2, XCircle, Clock, Truck, User, ChevronDown, MessageCircle, CheckCircle, Check } from 'lucide-react';
+import { Eye, CheckCircle2, XCircle, Clock, Truck, User, ChevronDown, MessageCircle, CheckCircle, Check, Edit, Trash2, AlertTriangle } from 'lucide-react';
 import { triggerNotification } from '../../components/NotificationToast';
 import { getWhatsAppNumber } from '../../utils/whatsapp';
 
@@ -11,6 +11,11 @@ const AdminPedidos = () => {
     const [filterStatus, setFilterStatus] = useState('all');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [assignedModalData, setAssignedModalData] = useState(null);
+    const [editingOrder, setEditingOrder] = useState(null);
+    const [editFormData, setEditFormData] = useState({});
+    const [savingEdit, setSavingEdit] = useState(false);
+    const [orderToDelete, setOrderToDelete] = useState(null);
+    const [deleting, setDeleting] = useState(false);
     const prevReadyCountRef = useRef(null);
 
     const fetchOrders = async () => {
@@ -60,6 +65,61 @@ const AdminPedidos = () => {
             if (win) win.close();
             console.error("Erreur mise à jour statut:", err);
             alert("Erreur lors de la mise à jour du statut");
+        }
+    };
+
+    const handleOpenEditModal = (order) => {
+        setEditFormData({
+            id: order.id,
+            order_number: order.order_number,
+            customer_name: order.customer_name || '',
+            customer_phone: order.customer_phone || '',
+            customer_address: order.customer_address || '',
+            type: order.type || 'livraison',
+            status: order.status || 'en_attente',
+            total: order.total !== undefined ? order.total : '',
+            notes: order.notes || ''
+        });
+        setEditingOrder(order);
+    };
+
+    const handleSaveEdit = async (e) => {
+        e.preventDefault();
+        setSavingEdit(true);
+        try {
+            await api.put(`/admin/orders/${editFormData.id}`, {
+                customer_name: editFormData.customer_name,
+                customer_phone: editFormData.customer_phone,
+                customer_address: editFormData.customer_address,
+                type: editFormData.type,
+                status: editFormData.status,
+                total: parseFloat(editFormData.total) || 0,
+                notes: editFormData.notes
+            });
+            triggerNotification("✨ Commande Modifiée", `La commande #${editFormData.order_number} a été mise à jour avec succès.`, "success");
+            setEditingOrder(null);
+            fetchOrders();
+        } catch (err) {
+            console.error("Erreur modification commande:", err);
+            alert("Erreur lors de la modification de la commande.");
+        } finally {
+            setSavingEdit(false);
+        }
+    };
+
+    const handleDeleteOrder = async () => {
+        if (!orderToDelete) return;
+        setDeleting(true);
+        try {
+            await api.delete(`/admin/orders/${orderToDelete.id}`);
+            triggerNotification("🗑️ Commande Supprimée", `La commande #${orderToDelete.order_number} a été supprimée.`, "success");
+            setOrderToDelete(null);
+            fetchOrders();
+        } catch (err) {
+            console.error("Erreur suppression commande:", err);
+            alert("Erreur lors de la suppression de la commande.");
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -192,7 +252,7 @@ const AdminPedidos = () => {
                                     <tr><td colSpan="6" className="p-12 text-center text-[#64748b] text-sm">Aucune commande à afficher.</td></tr>
                                 ) : (
                                     filteredOrders.map(order => (
-                                        <tr key={order.id} className="hover:bg-white/[0.01] transition-colors">
+                                        <tr key={order.id} className="hover:bg-white/[0.01] transition-colors group">
                                             <td className="px-6 py-4 font-bold text-white font-mono text-[13px]">{order.order_number}</td>
                                             <td className="px-6 py-4">
                                                 <div className="text-white font-bold text-[13px] mb-1">{order.customer_name}</div>
@@ -219,7 +279,23 @@ const AdminPedidos = () => {
                                                 </select>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <div className="flex justify-end">
+                                                <div className="flex justify-end items-center gap-2">
+                                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all duration-200">
+                                                        <button 
+                                                            onClick={() => handleOpenEditModal(order)}
+                                                            className="p-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors border border-blue-500/20 shadow-sm"
+                                                            title="Modifier la commande"
+                                                        >
+                                                            <Edit className="w-4 h-4" />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => setOrderToDelete(order)}
+                                                            className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors border border-red-500/20 shadow-sm"
+                                                            title="Supprimer la commande"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
                                                     <button 
                                                         onClick={() => setSelectedOrder(order)}
                                                         className="p-2 bg-[#8b5cf6]/10 hover:bg-[#8b5cf6]/20 text-[#8b5cf6] rounded-lg transition-colors border border-[#8b5cf6]/20 shadow-sm"
@@ -373,6 +449,161 @@ const AdminPedidos = () => {
                                 Fermer (Déjà assignée)
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {orderToDelete && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-[#1e1f2e] rounded-2xl shadow-2xl w-full max-w-md p-6 border border-white/[0.05] flex flex-col items-center text-center animate-in zoom-in-95 duration-200">
+                        <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-4">
+                            <AlertTriangle className="w-7 h-7" />
+                        </div>
+                        <h3 className="text-lg font-bold text-white mb-2">Supprimer la commande</h3>
+                        <p className="text-sm text-[#94a3b8] mb-6">
+                            Voulez-vous vraiment supprimer définitivement la commande <span className="text-white font-bold font-mono">#{orderToDelete.order_number}</span> ? Cette action est irréversible.
+                        </p>
+                        <div className="flex gap-3 w-full">
+                            <button 
+                                onClick={() => setOrderToDelete(null)}
+                                disabled={deleting}
+                                className="flex-1 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white font-semibold text-sm transition-colors"
+                            >
+                                Annuler
+                            </button>
+                            <button 
+                                onClick={handleDeleteOrder}
+                                disabled={deleting}
+                                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors shadow-lg shadow-red-600/30 flex items-center justify-center gap-2"
+                            >
+                                {deleting ? (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                ) : (
+                                    <>
+                                        <Trash2 className="w-4 h-4" />
+                                        Supprimer
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Order Modal */}
+            {editingOrder && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-[#1e1f2e] rounded-2xl shadow-2xl w-full max-w-xl border border-white/[0.05] overflow-hidden flex flex-col max-h-[90vh]">
+                        <div className="p-6 border-b border-white/[0.05] flex justify-between items-center bg-[#12131f]">
+                            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                                <Edit className="w-5 h-5 text-[#7c3aed]" /> Modifier <span className="text-[#7c3aed] font-mono">#{editFormData.order_number}</span>
+                            </h2>
+                            <button onClick={() => setEditingOrder(null)} className="text-[#64748b] hover:text-white transition-colors">
+                                <XCircle className="w-6 h-6" />
+                            </button>
+                        </div>
+                        <form onSubmit={handleSaveEdit} className="p-6 overflow-y-auto custom-scrollbar space-y-4 flex-1">
+                            <div>
+                                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Nom du client</label>
+                                <input 
+                                    type="text"
+                                    value={editFormData.customer_name || ''}
+                                    onChange={(e) => setEditFormData({ ...editFormData, customer_name: e.target.value })}
+                                    className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#7c3aed]"
+                                    required
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Téléphone</label>
+                                    <input 
+                                        type="text"
+                                        value={editFormData.customer_phone || ''}
+                                        onChange={(e) => setEditFormData({ ...editFormData, customer_phone: e.target.value })}
+                                        className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#7c3aed]"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Total (MAD)</label>
+                                    <input 
+                                        type="number"
+                                        step="0.01"
+                                        value={editFormData.total || ''}
+                                        onChange={(e) => setEditFormData({ ...editFormData, total: e.target.value })}
+                                        className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#7c3aed]"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Type</label>
+                                    <select
+                                        value={editFormData.type || 'livraison'}
+                                        onChange={(e) => setEditFormData({ ...editFormData, type: e.target.value })}
+                                        className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#7c3aed]"
+                                    >
+                                        <option value="livraison">Livraison</option>
+                                        <option value="sur_place">Sur place</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Statut</label>
+                                    <select
+                                        value={editFormData.status || 'en_attente'}
+                                        onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
+                                        className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#7c3aed]"
+                                    >
+                                        <option value="en_attente">En attente</option>
+                                        <option value="en_preparation">En préparation</option>
+                                        <option value="pret">Prête</option>
+                                        <option value="en_cours">En cours</option>
+                                        <option value="livre">Livré</option>
+                                        <option value="annule">Annulé</option>
+                                    </select>
+                                </div>
+                            </div>
+                            {editFormData.type === 'livraison' && (
+                                <div>
+                                    <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Adresse de livraison</label>
+                                    <input 
+                                        type="text"
+                                        value={editFormData.customer_address || ''}
+                                        onChange={(e) => setEditFormData({ ...editFormData, customer_address: e.target.value })}
+                                        className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-[#7c3aed]"
+                                    />
+                                </div>
+                            )}
+                            <div>
+                                <label className="block text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-1.5">Notes / Remarques</label>
+                                <textarea 
+                                    rows="2"
+                                    value={editFormData.notes || ''}
+                                    onChange={(e) => setEditFormData({ ...editFormData, notes: e.target.value })}
+                                    className="w-full bg-[#12131f] border border-white/[0.05] rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-[#7c3aed]"
+                                />
+                            </div>
+                            <div className="pt-4 border-t border-white/[0.05] flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingOrder(null)}
+                                    className="px-5 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white font-semibold text-sm transition-colors"
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={savingEdit}
+                                    className="px-6 py-2.5 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-semibold text-sm transition-colors shadow-lg shadow-[#7c3aed]/30 flex items-center justify-center gap-2"
+                                >
+                                    {savingEdit ? (
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    ) : "Enregistrer"}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
